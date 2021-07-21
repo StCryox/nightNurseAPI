@@ -3,7 +3,7 @@ export interface ISession {
     token: string;
     updateAt?: Date;
     createdAt?: Date;
-    userId: string;
+    userId?: string;
 }
 
 export class Session implements ISession {
@@ -11,7 +11,7 @@ export class Session implements ISession {
     token: string;
     updateAt?: Date;
     createdAt?: Date;
-    userId: string;
+    userId?: string;
 
     constructor(session: Session) {
         this.id = session.id;

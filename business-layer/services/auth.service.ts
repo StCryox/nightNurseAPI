@@ -83,7 +83,7 @@ export class AuthService {
         if(user != undefined){
             return AuthService.sessionRepository.insert({token, userId: user.id});
         }
-        
+        return null;
         
     }
 
