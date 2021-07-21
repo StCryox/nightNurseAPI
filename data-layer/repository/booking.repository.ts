@@ -1,3 +1,4 @@
+import {v4 as uuidv4} from 'uuid'
 import { Connection, RowDataPacket } from "mysql2/promise";
 import { DatabaseUtils } from "../config/database";
 import { Booking } from "../models/booking.model";
@@ -14,7 +15,7 @@ export class BookingRepository{
         return BookingRepository._instance;
     }
     
-    public async getOne(id: string): Promise<Booking[] | null>{
+    public async getAll(id: string): Promise<Booking[] | null>{
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {  
             const res = await BookingRepository._connection.query(`SELECT * FROM ${this.table} WHERE id = "${id}"`);
@@ -43,7 +44,7 @@ export class BookingRepository{
             await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
                 (id, usderId, providerId, date, createdAt) 
                 VALUES (?, ?, ?, ?, ?)`, [
-                booking.id,
+                uuidv4(),
                 booking.userId,
                 booking.providerId,
                 booking.date,

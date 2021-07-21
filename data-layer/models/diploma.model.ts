@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface IDiploma {
     id?: string;
     providerId?: string;
@@ -18,7 +16,7 @@ export class Diploma implements IDiploma {
     createdAt?: Date;
 
     constructor(diploma: Diploma) {
-        this.id = uuidv4();
+        this.id = diploma.id;
         this.providerId = diploma.providerId;
         this.filename = diploma.filename;
         this.filePath = diploma.filePath;

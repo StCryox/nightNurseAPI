@@ -8,16 +8,16 @@ import { Provider } from "../../data-layer/models/provider.model";
 
 export class AuthService {
 
-    private userRepository: UserRepository;
-    private providerRepository: ProviderRepository;
-    private sessionRepository: SessionRepository;
+    private static userRepository: UserRepository;
+    private static providerRepository: ProviderRepository;
+    private static sessionRepository: SessionRepository;
     private saltRounds: number = 15;
 
-    public async create(user: User, provider?: Provider): Promise<User> {
-        this.providerRepository = await ProviderRepository.getInstance();
-        this.userRepository = await UserRepository.getInstance();
+    public async create(user: User, provider?: Provider): Promise<User | null> {
+        AuthService.providerRepository = await ProviderRepository.getInstance();
+        AuthService.userRepository = await UserRepository.getInstance();
 
-        const userExist = await this.userRepository.getOne(user.login, user.mail);
+        const userExist = await AuthService.userRepository.getOne(user.login, user.mail);
         if(userExist){
             try {
                 throw new Error('L\'utilisateur existe déjà.');
@@ -27,8 +27,8 @@ export class AuthService {
             }
         }
 
-        if(provider){
-            const providerExist = await this.providerRepository.getOne(user.id);
+        if(provider && user.id !== undefined){
+            const providerExist = await AuthService.providerRepository.getOne(user.id);
             if(providerExist){
                 try {
                     throw new Error('Le prestataire existe déjà.');
@@ -37,24 +37,23 @@ export class AuthService {
                     console.log(e);
                 }
             }
+            await AuthService.providerRepository.insert(provider);
         }
-        
-        await this.providerRepository.insert(provider);
 
         // Hash password before inserting in DB
         let hashedPwd: string = bcrypt.hashSync(user.password, this.saltRounds);
 
-        return await this.userRepository.insert({
+        return AuthService.userRepository.insert({
             ...user,
             password: hashedPwd
         });
     }
 
-    public async getUser(login: string, password: string): Promise<Session> {
-        this.sessionRepository = await SessionRepository.getInstance();
-        this.userRepository = await UserRepository.getInstance();
+    public async getUser(login: string, password: string): Promise<Session | null>{
+        AuthService.sessionRepository = await SessionRepository.getInstance();
+        AuthService.userRepository = await UserRepository.getInstance();
 
-        const user = await this.userRepository.getOne(login);
+        const user = await AuthService.userRepository.getOne(login);
         if(user === null) {
             try {
                 throw new Error('Utilisateur non trouvé.');
@@ -63,27 +62,35 @@ export class AuthService {
                 console.log(e);
             }
         }
-        const isSamePassword = bcrypt.compareSync(password, user.password);
-        if(!isSamePassword) {
-            try {
-                throw new Error('Mot de passe incorrect.');
-            }
-            catch(e) {
-                console.log(e);
+        
+        if(user != undefined) {
+            const isSamePassword = bcrypt.compareSync(password, user.password);
+            if(!isSamePassword) {
+                try {
+                    throw new Error('Mot de passe incorrect.');
+                }
+                catch(e) {
+                    console.log(e);
+                }
             }
         }
 
         //Use JWT Authentification to generate TOKEN
 
         let token = "";
+        let user_id;
+
+        if(user != undefined){
+            return AuthService.sessionRepository.insert({token, userId: user.id});
+        }
         
-        return this.sessionRepository.insert({token, userId: user.id});
+        
     }
 
-    public async deleteSession(token: string): Promise<string> {
-        this.sessionRepository = await SessionRepository.getInstance();
+    public async deleteSession(token: string): Promise<string | null> {
+        AuthService.sessionRepository = await SessionRepository.getInstance();
 
-        const session = await this.sessionRepository.getOne(token);
+        const session = await AuthService.sessionRepository.getOne(token);
         if(session === null) {
             try {
                 throw new Error('Vous n\'êtes pas connecté.');
@@ -92,6 +99,15 @@ export class AuthService {
                 console.log(e);
             }
         }
-        return this.sessionRepository.delete(token);
+        return AuthService.sessionRepository.delete(token);
     }
+
+    
+    public async getSession(token: string): Promise<Session | null> {
+        return AuthService.sessionRepository.getOne(token);
+    } 
+
+    public async getProviderId(id: string): Promise<string | null> {
+        return AuthService.providerRepository.checkProviderExist(id);
+    } 
 }

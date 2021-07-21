@@ -13,4 +13,6 @@ export function buildRoutes(app: Express) {
     app.use("/provider", providerRouter);
 
     app.use("/booking", bookingRouter);
+
+    app.use("/admin", bookingRouter);
 }

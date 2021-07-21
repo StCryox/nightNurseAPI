@@ -1,19 +1,53 @@
 import { Connection, RowDataPacket } from "mysql2/promise";
 import { DatabaseUtils } from "../config/database";
-import { User } from "../models/user.model";
+import { Comment } from "../models/comment.model";
 
-export class UserRepository{
-    private table: string = "user";
+export class CommentRepository{
+    private table: string = "comment";
     private static _connection: Connection;
-    private static _instance: UserRepository;
+    private static _instance: CommentRepository;
 
-    public static async getInstance(): Promise<UserRepository> {
-        if(UserRepository._instance === undefined) {
-            UserRepository._instance = new UserRepository();
+    public static async getInstance(): Promise<CommentRepository> {
+        if(CommentRepository._instance === undefined) {
+            CommentRepository._instance = new CommentRepository();
         }
-        return UserRepository._instance;
+        return CommentRepository._instance;
     }
+
+    new Comment({
+        id: "" + row["id"],
+        userId: row["userId"],
+        providerId: row["providerId"],
+        title: row["title"],
+        comment: row["comment"],
+        updateAt: row["updateAt"],
+        createdAt: row["createdAt"]
+    });
     
+    public async getOne(id: string): Promise<Comment[] | null>{
+        CommentRepository._connection = await DatabaseUtils.getConnection();
+        try {  
+            const res = await CommentRepository._connection.query(`SELECT * FROM ${this.table} WHERE id = "${id}"`);
+            const data = res[0];
+                if(Array.isArray(data)) {
+                    return (data as RowDataPacket[]).map(function(row) {
+                        return new Comment({
+                            id: "" + row["id"],
+                            userId: row["userId"],
+                            providerId: row["providerId"],
+                            title: row["title"],
+                            comment: row["comment"],
+                            updateAt: row["updateAt"],
+                            createdAt: row["createdAt"]
+                        });
+                    });
+                }
+            } catch(err) {
+                console.error(err); 
+            }
+        return null;
+    }
+
     public async getAll(): Promise<User[] | null>{
         UserRepository._connection = await DatabaseUtils.getConnection();
         try {  
@@ -70,26 +104,21 @@ export class UserRepository{
         return null;
     }
 
-    public async insert(user: User): Promise<User | null> {
-        UserRepository._connection = await DatabaseUtils.getConnection();
+    public async insert(comment: Comment): Promise<Comment | null> {
+        CommentRepository._connection = await DatabaseUtils.getConnection();
         try {
-            await UserRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, firstName, lastName, mail, login, password, image, birthdate, age, role, createdAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
-                user.id,
-                user.firstName,
-                user.lastName,
-                user.mail,
-                user.login,
-                user.password,
-                user.image,
-                user.birthdate,
-                user.age,
-                user.role,
-                user.createdAt
+            await CommentRepository._connection.execute(`INSERT INTO ${this.table} 
+                (id, usderId, providerId, date, createdAt) 
+                VALUES (?, ?, ?, ?, ?)`, [
+                comment.id,
+                comment.userId,
+                comment.providerId,
+                comment.title,
+                comment.comment,
+                comment.createdAt
             ]);
-            return new User({
-                ...user
+            return new Comment({
+                ...comment
             });
         } catch(err) {
             console.error(err); 
@@ -97,25 +126,20 @@ export class UserRepository{
         }
     }
 
-    public async update(id: string, user: User): Promise<User | null> {
-        UserRepository._connection = await DatabaseUtils.getConnection();
+    public async update(id: string, comment: Comment): Promise<Comment | null> {
+        CommentRepository._connection = await DatabaseUtils.getConnection();
         try {
-            user.updateAt = new Date();
-            await UserRepository._connection.execute(`UPDATE ${this.table} 
-            SET firstName=?, lastName=?, mail=?, login=?, password=?, image=?, birthdate=?, age=?, role=?, updateAt=?   
+            comment.updateAt = new Date();
+            await CommentRepository._connection.execute(`UPDATE ${this.table} 
+            SET usderId=?, providerId=?, date=?, updateAt=? 
             WHERE id = "${id}"`, [
-                user.firstName,
-                user.lastName,
-                user.mail,
-                user.login,
-                user.password,
-                user.image,
-                user.birthdate,
-                user.age,
-                user.role,
-                user.updateAt
+                comment.userId,
+                comment.providerId,
+                comment.title,
+                comment.comment,
+                comment.updateAt
             ]);
-            return new User(user);
+            return new Comment(comment);
         } catch(err) {
             console.error(err); 
             return null;
@@ -123,13 +147,13 @@ export class UserRepository{
     }
 
     public async delete(id: string): Promise<string | null> {
-        UserRepository._connection = await DatabaseUtils.getConnection();
+        CommentRepository._connection = await DatabaseUtils.getConnection();
         try {
-             await UserRepository._connection.query(`DELETE FROM ${this.table} WHERE id = "${id}"`);        
+             await CommentRepository._connection.query(`DELETE FROM ${this.table} WHERE id = "${id}"`);        
              return id;
         } catch(err) {
             console.error(err); 
             return null;
-        }
+        }()
     }
 }

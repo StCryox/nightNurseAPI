@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface ISession {
     id?: string;
     token: string;
@@ -16,7 +14,7 @@ export class Session implements ISession {
     userId: string;
 
     constructor(session: Session) {
-        this.id = uuidv4();
+        this.id = session.id;
         this.token = session.token;
         this.createdAt = new Date();
         this.updateAt = session.updateAt;

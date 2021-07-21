@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface IUser {
     id?: string;
     firstName: string;
@@ -30,7 +28,7 @@ export class User implements IUser {
     createdAt?: Date;
 
     constructor(user: User) {
-        this.id = uuidv4();
+        this.id = user.id;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.mail = user.mail;

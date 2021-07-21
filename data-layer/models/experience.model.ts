@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface IExperience {
     id?: string;
     providerId?: string;
@@ -22,7 +20,7 @@ export class Experience implements IExperience {
     createdAt?: Date;
 
     constructor(experience: Experience) {
-        this.id = uuidv4();
+        this.id = experience.id;
         this.providerId = experience.providerId;
         this.startYear = experience.startYear;
         this.endYear = experience.endYear;

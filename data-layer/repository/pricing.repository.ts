@@ -28,6 +28,7 @@ export class PricingRepository{
                             startHour: row["startHour"],
                             endHour: row["endHour"],
                             price: row["price"],
+                            hourlyPrice: row["hourlyPrice"],
                             updateAt: row["updateAt"],
                             createdAt: row["createdAt"]
                         });
@@ -43,14 +44,15 @@ export class PricingRepository{
         PricingRepository._connection = await DatabaseUtils.getConnection();
         try {
             await PricingRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, providerId, date, startHour, endHour, price, createdAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)`, [
+                (id, providerId, date, startHour, endHour, price, hourlyPrice, createdAt) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
                 pricing.id,
                 pricing.providerId,
                 pricing.date,
                 pricing.startHour,
                 pricing.endHour,
                 pricing.price,
+                pricing.hourlyPrice,
                 pricing.createdAt
             ]);
             return new Pricing({
@@ -67,13 +69,14 @@ export class PricingRepository{
         try {
             pricing.updateAt = new Date();
             await PricingRepository._connection.execute(`UPDATE ${this.table} 
-            SET providerId=?, date=?, startHour=?, endHour=?, price=?, updateAt=? 
+            SET providerId=?, date=?, startHour=?, endHour=?, price=?, hourlyPrice=?, updateAt=? 
             WHERE id = "${id}"`, [
                 pricing.providerId,
                 pricing.date,
                 pricing.startHour,
                 pricing.endHour,
                 pricing.price,
+                pricing.hourlyPrice,
                 pricing.updateAt
             ]);
             return new Pricing(pricing);

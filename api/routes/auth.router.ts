@@ -1,6 +1,9 @@
 import express from "express";
+import {v4 as uuidv4} from 'uuid'
+import { Provider } from "../../data-layer/models/provider.model";
+import { User } from "../../data-layer/models/user.model";
 import { AuthController } from "../controllers/auth.controller";
-import { isAdministrator, isAuthentified } from "../middlewares/auth.middleware";
+import { isAuthentified } from "../middlewares/auth.middleware";
 
 const authRouter = express.Router();
 
@@ -12,7 +15,7 @@ authRouter.post("/subscribe/client",  async function(req, res) {
     const password = req.body.password;
     const image = req.body.image;
     const birthdate = req.body.birthdate;
-    const role = req.body.role;
+    const role = "client";
 
     if( firstName === undefined 
         || lastName === undefined 
@@ -20,15 +23,15 @@ authRouter.post("/subscribe/client",  async function(req, res) {
         || login === undefined 
         || password === undefined 
         || image === undefined 
-        || birthdate === undefined 
-        || role === undefined) {
+        || birthdate === undefined) {
         res.status(400).send("Some parameters are missing.").end();
         return;
     }
 
     const authController = new AuthController();
 
-    const user = await authController.ClientSubscribe({
+    const user = new User({
+        id: uuidv4(),
         firstName,
         lastName,
         mail,
@@ -38,6 +41,8 @@ authRouter.post("/subscribe/client",  async function(req, res) {
         birthdate,
         role
     });
+
+    await authController.ClientSubscribe(user);
 
     res.status(201);
     res.json(user);
@@ -51,10 +56,12 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     const password = req.body.password;
     const image = req.body.image;
     const birthdate = req.body.birthdate;
-    const role = req.body.role;
-    const role = req.body.role;
-    const role = req.body.role;
-
+    const role = "provider";
+    const verified = null;
+    const description = req.body.description;
+    const diploma = req.body.diploma;
+    const experience = req.body.experience;
+    const pricing = req.body.pricing;
 
     if( firstName === undefined 
         || lastName === undefined 
@@ -63,14 +70,18 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         || password === undefined 
         || image === undefined 
         || birthdate === undefined 
-        || role === undefined) {
+        || description === undefined 
+        || diploma === undefined 
+        || experience === undefined 
+        || pricing === undefined) {
         res.status(400).send("Some parameters are missing.").end();
         return;
     }
 
     const authController = new AuthController();
-    //TO EDIT
-    const user = await authController.ProviderSubscribe({
+    
+    const user = new User({
+        id: uuidv4(),
         firstName,
         lastName,
         mail,
@@ -79,17 +90,21 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         image,
         birthdate,
         role
-    },{
-        userId,
-        description,
-        diplomaId,
-        experienceId,
-        pricingId,
     });
 
-    res.status(201);
-    res.json(user);
+    const provider = new Provider({
+        userId: user.id,
+        description,
+        verified,
+        diploma,
+        experience,
+        pricing
+    });
 
+    const result = await authController.ProviderSubscribe(user, provider);
+
+    res.status(201);
+    res.json(result);
 });
 
 authRouter.post("/login", async function(req, res) {
@@ -103,7 +118,6 @@ authRouter.post("/login", async function(req, res) {
     const session = await authController.login(login, password);
     if(session === null) {
         res.status(404).send("Account doesn't exist.").end();
-        return;
     } else {
         res.json({
             token: session
@@ -113,7 +127,16 @@ authRouter.post("/login", async function(req, res) {
 
 authRouter.delete("/logout", isAuthentified, async function(req, res) {
     const authController = new AuthController();
-    // TO DO with JWT
+    const auth = req.headers["authorization"];
+    if(auth !== undefined) {
+        const token = auth.slice(7);
+        const result = await authController.logout(token);
+        if(result === null){
+            res.status(404).send("You're not logged in.").end();
+        }
+        res.status(200).json(result).end();
+    }
+    res.status(403).send("Access denied.").end();
 });
 
 export {

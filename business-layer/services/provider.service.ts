@@ -11,6 +11,13 @@ export class ProviderService {
     private experienceRepository: ExperienceRepository;
     private pricingRepository: PricingRepository;
 
+    constructor(){
+        this.providerRepository = new ProviderRepository();
+        this.diplomaRepository = new DiplomaRepository();
+        this.experienceRepository = new ExperienceRepository();
+        this.pricingRepository = new PricingRepository();
+    }
+
     public async getProviders(): Promise<Provider[]> {
         this.providerRepository = await ProviderRepository.getInstance();
         this.diplomaRepository = await DiplomaRepository.getInstance();
@@ -19,7 +26,7 @@ export class ProviderService {
 
         const providerData = this.providerRepository.getAll();
         //Map each lines into object and put in providerData
-        this.diplomaRepository.get(providerData[0].diplomaId)
+        this.diplomaRepository.get(providerData.diplomaId)
         return [];
 
     }

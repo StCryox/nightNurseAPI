@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface IBooking {
     id?: string;
     userId: string;
@@ -18,7 +16,7 @@ export class Booking implements IBooking {
     createdAt?: Date;
 
     constructor(booking: Booking) {
-        this.id = uuidv4();
+        this.id = booking.id;
         this.userId = booking.userId;
         this.providerId = booking.providerId;
         this.date = booking.date;

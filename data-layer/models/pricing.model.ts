@@ -1,5 +1,3 @@
-import {v4 as uuidv4} from 'uuid'
-
 export interface IPricing {
     id?: string;
     providerId?: string;
@@ -7,6 +5,7 @@ export interface IPricing {
     startHour: number;
     endHour: number;
     price: number;
+    hourlyPrice: number;
     updateAt?: Date;
     createdAt?: Date;
 }
@@ -18,16 +17,18 @@ export class Pricing implements IPricing {
     startHour: number;
     endHour: number;
     price: number;
+    hourlyPrice: number;
     updateAt?: Date;
     createdAt?: Date;
 
     constructor(pricing: Pricing) {
-        this.id = uuidv4();
+        this.id = pricing.id;
         this.providerId = pricing.providerId;
         this.date = pricing.date;
         this.startHour = pricing.startHour;
         this.endHour = pricing.endHour;
         this.price = pricing.price;
+        this.hourlyPrice = pricing.price;
         this.updateAt = pricing.updateAt;
         this.createdAt = new Date();
     }

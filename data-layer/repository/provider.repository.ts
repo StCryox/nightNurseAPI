@@ -25,9 +25,9 @@ export class ProviderRepository{
                             id: "" + row["id"],
                             userId: row["userId"],
                             description: row["description"],
-                            diplomaId: row["diploma"],
-                            experienceId: row["experience"],
-                            pricingId: row["pricing"],
+                            diplomaId: row["diplomaId"],
+                            experienceId: row["experienceId"],
+                            pricingId: row["pricingId"],
                             updateAt: row["updateAt"],
                             createdAt: row["createdAt"]
                         });
@@ -57,6 +57,20 @@ export class ProviderRepository{
                     updateAt: row["updateAt"],
                     createdAt: row["createdAt"]
                 });
+            }
+        }
+        return null;
+    }
+
+    public async checkProviderExist(providerId: string): Promise<string | null> {
+        ProviderRepository._connection = await DatabaseUtils.getConnection();
+        const res = await ProviderRepository._connection.query(`SELECT * FROM ${this.table} WHERE id = "${providerId}"`);
+        const data = res[0];
+        if(Array.isArray(data)) {
+            const rows = data as RowDataPacket[];
+            if(rows.length > 0) {
+                const row = rows[0];
+                    return row["id"];
             }
         }
         return null;
