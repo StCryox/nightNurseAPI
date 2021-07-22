@@ -44,4 +44,9 @@ export class AuthController {
     public async getUserById(id: string): Promise<User | null> {
         return this.authService.getUserById(id);
     }
+
+    public async getAllUsers(): Promise<User[] | null> {
+        return this.authService.getAllUsers();
+    }
+
 }

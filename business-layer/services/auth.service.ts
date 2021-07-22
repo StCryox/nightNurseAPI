@@ -114,5 +114,10 @@ export class AuthService {
 
     public async getProviderId(id: string): Promise<string | null> {
         return AuthService.providerRepository.checkProviderExist(id);
-    } 
+    }
+
+    public async getAllUsers(): Promise<User[] | null>{
+        AuthService.userRepository = await UserRepository.getInstance();
+        return AuthService.userRepository.getAll();
+    }
 }

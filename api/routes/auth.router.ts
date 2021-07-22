@@ -138,12 +138,18 @@ authRouter.delete("/logout", isAuthentified, async function(req, res) {
     res.status(403).send("Access denied.").end();
 });
 
-authRouter.get("/getuser/:id", async function(req, res) {
+authRouter.get("/user/:id", async function(req, res) {
     const id = req.params.id;
     console.log(id);
     const authController = new AuthController();
     const user = await authController.getUserById(id);
     console.log(user?.firstName);
+    res.status(200).json(user).end();
+});
+
+authRouter.get("/allUsers", async function(req, res) {
+    const authController = new AuthController();
+    const user = await authController.getAllUsers();
     res.status(200).json(user).end();
 });
 
