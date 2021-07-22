@@ -40,4 +40,8 @@ export class AuthController {
     public async getProviderId(id: string): Promise<string | null> {
         return this.authService.getProviderId(id);
     }
+
+    public async getUserById(id: string): Promise<User | null> {
+        return this.authService.getUserById(id);
+    }
 }

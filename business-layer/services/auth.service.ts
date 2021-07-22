@@ -105,7 +105,12 @@ export class AuthService {
     
     public async getSession(token: string): Promise<Session | null> {
         return AuthService.sessionRepository.getOne(token);
-    } 
+    }
+
+    public async getUserById(id: string): Promise<User | null> {
+        AuthService.userRepository = await UserRepository.getInstance();
+        return AuthService.userRepository.getOne(undefined,undefined,id);
+    }
 
     public async getProviderId(id: string): Promise<string | null> {
         return AuthService.providerRepository.checkProviderExist(id);
