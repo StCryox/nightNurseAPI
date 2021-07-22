@@ -6,7 +6,6 @@ import { AuthController } from "../controllers/auth.controller";
 import { isAuthentified } from "../middlewares/auth.middleware";
 
 const authRouter = express.Router();
-
 authRouter.post("/subscribe/client",  async function(req, res) {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -137,6 +136,21 @@ authRouter.delete("/logout", isAuthentified, async function(req, res) {
         res.status(200).json(result).end();
     }
     res.status(403).send("Access denied.").end();
+});
+
+authRouter.get("/user/:id", async function(req, res) {
+    const id = req.params.id;
+    console.log(id);
+    const authController = new AuthController();
+    const user = await authController.getUserById(id);
+    console.log(user?.firstName);
+    res.status(200).json(user).end();
+});
+
+authRouter.get("/allUsers", async function(req, res) {
+    const authController = new AuthController();
+    const user = await authController.getAllUsers();
+    res.status(200).json(user).end();
 });
 
 export {
