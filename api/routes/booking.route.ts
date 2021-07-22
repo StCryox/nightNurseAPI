@@ -69,7 +69,7 @@ bookingRouter.delete("/:id", isAuthentified, async function(req, res) {
     res.status(200).json(result).end();
 });
 
-app.post("/create-payment-intent", async (req, res) => {
+bookingRouter.post("/create-payment-intent", async (req, res) => {
 
     const { items } = req.body;
 
