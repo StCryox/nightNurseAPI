@@ -49,4 +49,12 @@ export class AuthController {
         return this.authService.getAllUsers();
     }
 
+    public async updateUser(fieldName: string, fieldValue: string, id: string): Promise<string | null> {
+        return this.authService.updateUser(fieldName,fieldValue,id);
+    }
+
+    public async getSessionById(id: string): Promise<Session | null> {
+        return this.authService.getSessionById(id);
+    }
+
 }

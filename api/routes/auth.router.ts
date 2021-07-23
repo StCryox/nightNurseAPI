@@ -4,8 +4,10 @@ import { Provider } from "../../data-layer/models/provider.model";
 import { User } from "../../data-layer/models/user.model";
 import { AuthController } from "../controllers/auth.controller";
 import { isAuthentified } from "../middlewares/auth.middleware";
+import {bookingRouter} from "./booking.route";
 
 const authRouter = express.Router();
+const stripe = require("stripe")("sk_test_51JFzBbFJFVSlloUZiKyxrzKKlUz6oPGW2kphACoTGYBy9yvuDefscMBCgjXixu6UFntDU0dO5wcRmgftkPliTkeV00ULwbWv3p");
 authRouter.post("/subscribe/client",  async function(req, res) {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -138,6 +140,23 @@ authRouter.delete("/logout", isAuthentified, async function(req, res) {
     res.status(403).send("Access denied.").end();
 });
 
+authRouter.post("/user/update", async function(req, res) {
+    const fieldName = req.body.fieldName;
+    const fieldValue = req.body.fieldValue;
+    const id = req.body.id;
+    if(fieldValue === undefined || fieldName === undefined) {
+        res.status(400).send("Some parameters are missing.").end();
+        return;
+    }
+    const authController = new AuthController();
+    const session = await authController.updateUser(fieldName,fieldValue,id);
+    if(session === null) {
+        res.status(404).send("Account doesn't exist.").end();
+    } else {
+        res.status(200).send("Données mises à jour").end();
+    }
+});
+
 authRouter.get("/user/:id", async function(req, res) {
     const id = req.params.id;
     console.log(id);
@@ -147,10 +166,40 @@ authRouter.get("/user/:id", async function(req, res) {
     res.status(200).json(user).end();
 });
 
+authRouter.get("/session/:id", async function(req, res) {
+    const id = req.params.id;
+    console.log(id);
+    const authController = new AuthController();
+    const session = await authController.getSessionById(id);
+    res.status(200).json(session).end();
+});
+
 authRouter.get("/allUsers", async function(req, res) {
     const authController = new AuthController();
     const user = await authController.getAllUsers();
     res.status(200).json(user).end();
+});
+
+authRouter.post("/create-payment-intent", async (req, res) => {
+
+
+
+    // Create a PaymentIntent with the order amount and currency
+
+    const paymentIntent = await stripe.paymentIntents.create({
+
+        amount: req.body.amount,
+
+        currency: "eur"
+
+    });
+
+    res.send({
+
+        clientSecret: paymentIntent.client_secret
+
+    });
+
 });
 
 export {
