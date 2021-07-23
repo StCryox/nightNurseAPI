@@ -57,7 +57,7 @@ export class UserRepository{
                     lastName: row["lastName"],
                     mail: row["mail"],
                     login: row["login"],
-                    password: " ",
+                    password: row["password"],
                     image: row["image"],
                     birthdate: row["birthdate"],
                     age: row["age"],
@@ -129,6 +129,21 @@ export class UserRepository{
              return id;
         } catch(err) {
             console.error(err); 
+            return null;
+        }
+    }
+
+    public async updateOneField(fieldName: string, fieldValue: string, id: string): Promise<string | null> {
+        UserRepository._connection = await DatabaseUtils.getConnection();
+        try {
+            await UserRepository._connection.execute(
+                `UPDATE ${this.table} SET ${fieldName}= ?, updateAt = ? WHERE id = "${id}"`, [
+                fieldValue,
+                new Date()
+            ]);
+            return id;
+        } catch(err) {
+            console.error(err);
             return null;
         }
     }
