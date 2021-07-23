@@ -142,7 +142,7 @@ authRouter.delete("/logout", isAuthentified, async function(req, res) {
 
 authRouter.post("/user/update", async function(req, res) {
     const fieldName = req.body.fieldName;
-    const fieldValue = req.body.fieldValue;
+    const fieldValue = req.body.value;
     const id = req.body.id;
     if(fieldValue === undefined || fieldName === undefined) {
         res.status(400).send("Some parameters are missing.").end();
@@ -153,7 +153,7 @@ authRouter.post("/user/update", async function(req, res) {
     if(session === null) {
         res.status(404).send("Account doesn't exist.").end();
     } else {
-        res.status(200).send("Données mises à jour").end();
+        res.status(200).json(session).end();
     }
 });
 
@@ -166,11 +166,10 @@ authRouter.get("/user/:id", async function(req, res) {
     res.status(200).json(user).end();
 });
 
-authRouter.get("/session/:id", async function(req, res) {
-    const id = req.params.id;
-    console.log(id);
+authRouter.get("/session/:token", async function(req, res) {
+    const token = req.params.token;
     const authController = new AuthController();
-    const session = await authController.getSessionById(id);
+    const session = await authController.getSessionByToken(token);
     res.status(200).json(session).end();
 });
 

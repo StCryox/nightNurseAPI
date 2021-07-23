@@ -53,8 +53,8 @@ export class AuthController {
         return this.authService.updateUser(fieldName,fieldValue,id);
     }
 
-    public async getSessionById(id: string): Promise<Session | null> {
-        return this.authService.getSessionById(id);
+    public async getSessionByToken(token: string): Promise<Session | null> {
+        return this.authService.getSessionByToken(token);
     }
 
 }
