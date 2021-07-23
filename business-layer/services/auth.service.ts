@@ -121,4 +121,14 @@ export class AuthService {
         AuthService.userRepository = await UserRepository.getInstance();
         return AuthService.userRepository.getAll();
     }
+
+    public async updateUser(fieldName: string, fieldValue: string, id: string): Promise<string | null> {
+        AuthService.userRepository = await UserRepository.getInstance();
+        return AuthService.userRepository.updateOneField(fieldName,fieldValue,id);
+    }
+
+    public async getSessionByToken(id: string): Promise<Session | null> {
+        AuthService.sessionRepository = await SessionRepository.getInstance();
+        return AuthService.sessionRepository.getOne(id);
+    }
 }
