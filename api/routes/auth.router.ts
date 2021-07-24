@@ -218,28 +218,33 @@ authRouter.post("/user/file", async(req: any, res: any) => {
     }
 });
 
-authRouter.get("/file/user", async(req: any, res: any) => {
-    let file = req.body.fileName;
-    let fileContent = '';
+authRouter.get("/file/user/:fileName", async(req: any, res: any) => {
+    let file = 'images/' + req.params.fileName;
+    let finaleData = '';
     const fs = require('fs');
     try {
         fs.readFile(file, async (err: any, data: any) => {
-            if (err) return console.log(err);
-            console.log(data);
-            console.log(Object.prototype.toString.call(data));
-            fileContent = new TextDecoder().decode(data);
-            console.log("cgde" + fileContent);
-            if(fileContent === '') {
-                res.status(404).send('image non trouvée').end();
-            } else {
-                res.status(200).json({file: fileContent}).end();
+            if (err){
+                try{
+                    await fs.readFile('images/default.jpg', async(error: any, defaultData: any) => {
+                        if (error) return console.log(error);
+                        await res.write(defaultData,'binary');
+                        await res.status(404).end(null,'binary');
+                    });
+                }
+                catch (err) {
+                    console.error(err)
+                }
+            }
+            if(data !== undefined) {//si image pas trouvée, on met l'image par défaut
+                res.write(data,'binary');
+                res.status(200).end(null,'binary');
             }
         });
 
     }
     catch (err) {
-        console.error(err)
-        res.status(404).send('image non trouvée').end();
+
     }
 
 });
