@@ -5,6 +5,7 @@ import { User } from "../../user/data-layer/user.model";
 import { UserRepository } from "../../user/data-layer/user.repository";
 import { Session } from "../../user/session/data-layer/session.model";
 import { SessionRepository } from "../../user/session/data-layer/session.repository";
+import {v4 as uuidv4} from "uuid";
 
 
 export class AuthService {
@@ -93,8 +94,7 @@ export class AuthService {
         }
 
         
-        let token = await hash( Date.now() + login, 5);
-        token = role + token;
+        let token = uuidv4();
 
         if(user != undefined){
             return this.sessionRepository.insert({token : token, userId: user.id});

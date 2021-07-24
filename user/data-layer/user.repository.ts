@@ -48,6 +48,7 @@ export class UserRepository{
     }
 
     public async getOne(login?: string, mail?: string, id?: string): Promise<User | null> {
+        console.log("here");
         UserRepository._connection = await DatabaseUtils.getConnection();
         const res = await UserRepository._connection.query(`SELECT * FROM ${this.table} WHERE login = "${login}" OR mail = "${mail}" OR id = "${id}"`);
         const data = res[0];

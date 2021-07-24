@@ -38,10 +38,6 @@ export class SessionRepository {
     public async insert(session: Session): Promise<Session | null> {
         SessionRepository._connection = await DatabaseUtils.getConnection();
         try {
-            console.log("values : " + session.id + " " +
-                session.token  + " " +
-                Date.now() + " " +
-                session.userId)
            await SessionRepository._connection.execute(`INSERT INTO ${this.table} 
                 (id, token, createdAt, userId) 
                 VALUES (?, ?, ?, ?)`, [
