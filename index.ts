@@ -2,9 +2,7 @@ import {config} from "dotenv";
 config();
 import express, {Express} from "express";
 import bodyParser from "body-parser";
-
-
-import {buildRoutes} from "./api/routes";
+import {buildRoutes} from "./api";
 
 const fileUpload = require('express-fileupload');
 const cors = require('cors');

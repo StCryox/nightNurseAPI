@@ -1,6 +1,7 @@
 import { Connection, RowDataPacket } from "mysql2/promise";
 import { DatabaseUtils } from "../../../config/database";
 import { Session } from "./session.model";
+import {v4 as uuidv4} from "uuid";
 export class SessionRepository {
 
     private table = "session";
@@ -37,19 +38,23 @@ export class SessionRepository {
     public async insert(session: Session): Promise<Session | null> {
         SessionRepository._connection = await DatabaseUtils.getConnection();
         try {
+            console.log("values : " + session.id + " " +
+                session.token  + " " +
+                Date.now() + " " +
+                session.userId)
            await SessionRepository._connection.execute(`INSERT INTO ${this.table} 
                 (id, token, createdAt, userId) 
                 VALUES (?, ?, ?, ?)`, [
-                session.id,
+               uuidv4(),
                 session.token,
-                session.createdAt,
+                new Date(),
                 session.userId
             ]);
             return new Session({
                 ...session
             });
         } catch(err) {
-            console.error(err); 
+            console.error(err);
             return null;
         }
     }
