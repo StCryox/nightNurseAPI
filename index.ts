@@ -5,6 +5,8 @@ import bodyParser from "body-parser";
 
 
 import {buildRoutes} from "./api/routes";
+
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const app: Express = express();
 var corsOptions = {
@@ -13,9 +15,9 @@ var corsOptions = {
     methods: "GET, PUT, POST, DELETE"
 }
 app.use(cors(corsOptions));
+app.use(fileUpload());
 app.use(bodyParser.json());
 buildRoutes(app);
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, function() {

@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 import { Provider } from "../../data-layer/models/provider.model";
 import { User } from "../../data-layer/models/user.model";
 import { AuthController } from "../controllers/auth.controller";
-import { isAuthentified } from "../middlewares/auth.middleware";
+import {isAuthentified} from "../middlewares/auth.middleware";
 import {bookingRouter} from "./booking.route";
 
 const authRouter = express.Router();
@@ -200,6 +200,25 @@ authRouter.post("/create-payment-intent", async (req, res) => {
     });
 
 });
+
+authRouter.post("/user/file", async(req: any, res: any) => {
+    let file = req.files.fileKey;
+    const fs = require('fs');
+    try {
+        console.log(req.files.fileKey.data);
+        fs.writeFile('images/monimage.jpg',file.data, function (err: any) {
+            if (err) return console.log(err);
+            console.log('Hello World > helloworld.txt');
+        });
+    }
+    catch (err) {
+        console.error(err)
+    }
+
+    console.log("File uploaded: ", file.name);
+    console.log("oh bowdel + " + JSON.stringify(req.body));
+});
+
 
 export {
     authRouter
