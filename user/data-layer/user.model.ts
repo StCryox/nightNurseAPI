@@ -11,6 +11,7 @@ export interface IUser {
     role: string;
     address: string;
     zipcode: number;
+    city: string;
     province: string;
     phoneNumber: number;
     updateAt?: Date;
@@ -30,6 +31,7 @@ export class User implements IUser {
     role: string;
     address: string;
     zipcode: number;
+    city: string;
     province: string;
     phoneNumber: number;
     updateAt?: Date;
@@ -48,6 +50,7 @@ export class User implements IUser {
         this.role = user.role;
         this.address = user.address;
         this.zipcode = user.zipcode;
+        this.city = user.city;
         this.province = user.province;
         this.phoneNumber = user.phoneNumber;
         this.updateAt = user.updateAt;

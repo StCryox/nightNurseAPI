@@ -1,4 +1,5 @@
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Provider } from "../../provider/data-layer/model/provider.model";
 import { ProviderRepository } from "../../provider/data-layer/repository/provider.repository";
 import { User } from "../../user/data-layer/user.model";
@@ -93,7 +94,7 @@ export class AuthService {
         }
 
         
-        let token = await hash( Date.now() + login, 5);
+        let token = crypto.randomBytes(20).toString('hex');
         token = role + token;
 
         if(user != undefined){

@@ -45,7 +45,7 @@ export class SessionRepository {
            await SessionRepository._connection.execute(`INSERT INTO ${this.table} 
                 (id, token, createdAt, userId) 
                 VALUES (?, ?, ?, ?)`, [
-               uuidv4(),
+                uuidv4(),
                 session.token,
                 new Date(),
                 session.userId

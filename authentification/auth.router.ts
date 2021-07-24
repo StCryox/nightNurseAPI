@@ -7,9 +7,6 @@ import { Provider } from "../provider/data-layer/model/provider.model";
 import { User } from "../user/data-layer/user.model";
 import { AuthController } from "./auth.controller";
 import { isAuthentified } from "./auth.middleware";
-import {bookingRouter} from "./booking.route";
-import {FILE} from "dns";
-import {TextDecoder} from "util";
 
 const authRouter = express.Router();
 
@@ -22,10 +19,11 @@ authRouter.post("/subscribe/client",  async function(req, res) {
     const image = req.body.image;
     const birthdate = req.body.birthdate;
     const role = "client";
-    const address = req.body.birthdate;
-    const zipcode = req.body.birthdate;
-    const province = req.body.birthdate;
-    const phoneNumber = req.body.birthdate;
+    const address = req.body.address;
+    const zipcode = req.body.zipcode;
+    const city = req.body.city;
+    const province = req.body.province;
+    const phoneNumber = req.body.phoneNumber;
 
     if( firstName === undefined
         || lastName === undefined
@@ -36,6 +34,7 @@ authRouter.post("/subscribe/client",  async function(req, res) {
         || birthdate === undefined
         || address === undefined
         || zipcode === undefined
+        || city === undefined
         || province === undefined
         || phoneNumber === undefined) {
         res.status(400).send("Some parameters are missing.").end();
@@ -56,6 +55,7 @@ authRouter.post("/subscribe/client",  async function(req, res) {
         role,
         address,
         zipcode,
+        city,
         province,
         phoneNumber
     });
@@ -75,10 +75,11 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     const image = req.body.image;
     const birthdate = req.body.birthdate;
     const role = "provider";
-    const address = req.body.birthdate;
-    const zipcode = req.body.birthdate;
-    const province = req.body.birthdate;
-    const phoneNumber = req.body.birthdate;
+    const address = req.body.address;
+    const zipcode = req.body.zipcode;
+    const city = req.body.city;
+    const province = req.body.province;
+    const phoneNumber = req.body.phoneNumber;
     const verified = null;
     const description = req.body.description;
     const diploma = req.body.diploma;
@@ -94,6 +95,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         || birthdate === undefined
         || address === undefined
         || zipcode === undefined
+        || city === undefined
         || province === undefined
         || phoneNumber === undefined
         || description === undefined
@@ -118,6 +120,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         role,
         address,
         zipcode,
+        city,
         province,
         phoneNumber
     });

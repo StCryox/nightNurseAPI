@@ -34,6 +34,7 @@ export class UserRepository{
                             role: row["role"],
                             address: row["address"],
                             zipcode: row["zipcode"],
+                            city: row["city"],
                             province: row["province"],
                             phoneNumber: row["phoneNumber"],
                             updateAt: row["updateAt"],
@@ -68,6 +69,7 @@ export class UserRepository{
                     role: row["role"],
                     address: row["address"],
                     zipcode: row["zipcode"],
+                    city: row["city"],
                     province: row["province"],
                     phoneNumber: row["phoneNumber"],
                     updateAt: row["updateAt"],
@@ -82,8 +84,8 @@ export class UserRepository{
         UserRepository._connection = await DatabaseUtils.getConnection();
         try {
             await UserRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, firstName, lastName, mail, login, password, image, birthdate, age, role, address, zipcode, province, phoneNumber, createdAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+                (id, firstName, lastName, mail, login, password, image, birthdate, age, role, address, zipcode, city, province, phoneNumber, createdAt) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
                 user.id,
                 user.firstName,
                 user.lastName,
@@ -96,6 +98,7 @@ export class UserRepository{
                 user.role,
                 user.address,
                 user.zipcode,
+                user.city,
                 user.province,
                 user.phoneNumber,
                 user.createdAt
@@ -114,7 +117,7 @@ export class UserRepository{
         try {
             user.updateAt = new Date();
             await UserRepository._connection.execute(`UPDATE ${this.table} 
-            SET firstName=?, lastName=?, mail=?, login=?, password=?, image=?, birthdate=?, age=?, role=?, address=?, zipcode=?, province=?, phoneNumber=?, updateAt=?   
+            SET firstName=?, lastName=?, mail=?, login=?, password=?, image=?, birthdate=?, age=?, role=?, address=?, zipcode=?, city=?, province=?, phoneNumber=?, updateAt=?   
             WHERE id = "${id}"`, [
                 user.firstName,
                 user.lastName,
@@ -127,6 +130,7 @@ export class UserRepository{
                 user.role,
                 user.address,
                 user.zipcode,
+                user.city,
                 user.province,
                 user.phoneNumber,
                 user.updateAt

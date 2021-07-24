@@ -29,6 +29,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
     const role = req.body.role;
     const address = req.body.address;
     const zipcode = req.body.zipcode;
+    const city = req.body.city;
     const province = req.body.province;
     const phoneNumber = req.body.phoneNumber;
 
@@ -44,6 +45,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
         || role === undefined 
         || address === undefined 
         || zipcode === undefined 
+        || city === undefined
         || province === undefined 
         || phoneNumber === undefined) {
         res.status(400).send("Some parameters are missing.").end();
@@ -64,6 +66,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
         role,
         address,
         zipcode,
+        city,
         province,
         phoneNumber
     });
