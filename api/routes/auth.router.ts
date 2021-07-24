@@ -5,6 +5,8 @@ import { User } from "../../data-layer/models/user.model";
 import { AuthController } from "../controllers/auth.controller";
 import {isAuthentified} from "../middlewares/auth.middleware";
 import {bookingRouter} from "./booking.route";
+import {FILE} from "dns";
+import {TextDecoder} from "util";
 
 const authRouter = express.Router();
 const stripe = require("stripe")("sk_test_51JFzBbFJFVSlloUZiKyxrzKKlUz6oPGW2kphACoTGYBy9yvuDefscMBCgjXixu6UFntDU0dO5wcRmgftkPliTkeV00ULwbWv3p");
@@ -214,9 +216,32 @@ authRouter.post("/user/file", async(req: any, res: any) => {
     catch (err) {
         console.error(err)
     }
+});
 
-    console.log("File uploaded: ", file.name);
-    console.log("oh bowdel + " + JSON.stringify(req.body));
+authRouter.get("/file/user", async(req: any, res: any) => {
+    let file = req.body.fileName;
+    let fileContent = '';
+    const fs = require('fs');
+    try {
+        fs.readFile(file, async (err: any, data: any) => {
+            if (err) return console.log(err);
+            console.log(data);
+            console.log(Object.prototype.toString.call(data));
+            fileContent = new TextDecoder().decode(data);
+            console.log("cgde" + fileContent);
+            if(fileContent === '') {
+                res.status(404).send('image non trouvée').end();
+            } else {
+                res.status(200).json({file: fileContent}).end();
+            }
+        });
+
+    }
+    catch (err) {
+        console.error(err)
+        res.status(404).send('image non trouvée').end();
+    }
+
 });
 
 
