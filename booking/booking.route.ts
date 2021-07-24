@@ -13,7 +13,7 @@ bookingRouter.get("/", isAuthentified, async function(req, res) {
 });
 
 bookingRouter.get("/userBookings/:userId", isAuthentified, async function(req, res) {
-    const userId: string = req.body.userId;
+    const userId: string = req.params.userId;
     const bookingController = new BookingController();
     const userBookings = await bookingController.getAllUserBookingsById(userId);
     res.status(200).json(userBookings).end();
@@ -57,6 +57,8 @@ bookingRouter.put("/:id", isAuthentified, async function(req, res) {
     const userId = req.body.description;
     const providerId = req.body.images;
     const date = req.body.type;
+    const userMail = req.body.mail;
+    const providerMail = req.body.providerMail;
 
     if( id === undefined 
         || userId === undefined 
@@ -71,6 +73,39 @@ bookingRouter.put("/:id", isAuthentified, async function(req, res) {
         userId,
         providerId,
         date
+    });
+    var nodemailer = require('nodemailer');
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'nightnurse.pa@gmail.com',
+            pass: 'vTFA7dnTgKMTEGZ'
+        }
+    });
+
+    var mailOptions = {
+        from: 'nightnurse.pa@gmail.com',
+        to: userMail,
+        bcc: 'nightnurse.pa@gmail.com',
+        subject: `Demande de modification de la réservation #${id}`,
+        text: `Bonjour,\nLa commande ${id} a été modifiée.\nVous pouvez dès à présent voir les modifications sur notre site.`
+    };
+
+    transporter.sendMail(mailOptions, function(error: any, info: { response: string; }){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email 1 sent: ' + info.response);
+        }
+    });
+
+    mailOptions.to = providerMail;
+    transporter.sendMail(mailOptions, function(error: any, info: { response: string; }){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email 2 sent: ' + info.response);
+        }
     });
 
     res.status(201);
@@ -105,6 +140,53 @@ bookingRouter.post("/create-payment-intent", async (req, res) => {
     });
 
 });
+
+bookingRouter.post("/mail/update", isAuthentified, async function(req, res) {
+    const userMail = req.body.mail;
+    const bookingId = req.body.bookingId;
+    const providerMail = req.body.providerMail;
+    var nodemailer = require('nodemailer');
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'nightnurse.pa@gmail.com',
+            pass: 'vTFA7dnTgKMTEGZ'
+        }
+    });
+
+    var mailOptions = {
+        from: 'nightnurse.pa@gmail.com',
+        to: userMail,
+        bcc: 'nightnurse.pa@gmail.com',
+        subject: `Demande de modification de la réservation #${bookingId}`,
+        text: 'Bonjour,\nVous avez demandé à changer les données de votre commande.\nCe message a été transmis au prestataire concerné.'
+    };
+
+    transporter.sendMail(mailOptions, function(error: any, info: { response: string; }){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email 1 sent: ' + info.response);
+        }
+    });
+
+    mailOptions.to = providerMail;
+    mailOptions.text = `Bonjour,\nUne demande de modification a été effectuée pour la commande ${bookingId},` +
+        ` vous pouvez la modifier maintenant, ou envoyer un mail à l'utilisateur à cette addresse : ${userMail}`;
+
+    transporter.sendMail(mailOptions, function(error: any, info: { response: string; }){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email 2 sent: ' + info.response);
+        }
+    });
+
+    res.send('Mails envoyé').status(201).end();
+
+});
+
+
 
 export {
     bookingRouter
