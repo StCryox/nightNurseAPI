@@ -7,6 +7,9 @@ import { Provider } from "../provider/data-layer/model/provider.model";
 import { User } from "../user/data-layer/user.model";
 import { AuthController } from "./auth.controller";
 import { isAuthentified } from "./auth.middleware";
+import {bookingRouter} from "./booking.route";
+import {FILE} from "dns";
+import {TextDecoder} from "util";
 
 const authRouter = express.Router();
 
@@ -24,12 +27,12 @@ authRouter.post("/subscribe/client",  async function(req, res) {
     const province = req.body.birthdate;
     const phoneNumber = req.body.birthdate;
 
-    if( firstName === undefined 
-        || lastName === undefined 
-        || mail === undefined 
-        || login === undefined 
-        || password === undefined 
-        || image === undefined 
+    if( firstName === undefined
+        || lastName === undefined
+        || mail === undefined
+        || login === undefined
+        || password === undefined
+        || image === undefined
         || birthdate === undefined
         || address === undefined
         || zipcode === undefined
@@ -82,27 +85,27 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     const experience = req.body.experience;
     const pricing = req.body.pricing;
 
-    if( firstName === undefined 
-        || lastName === undefined 
-        || mail === undefined 
-        || login === undefined 
-        || password === undefined 
-        || image === undefined 
-        || birthdate === undefined 
+    if( firstName === undefined
+        || lastName === undefined
+        || mail === undefined
+        || login === undefined
+        || password === undefined
+        || image === undefined
+        || birthdate === undefined
         || address === undefined
         || zipcode === undefined
         || province === undefined
         || phoneNumber === undefined
-        || description === undefined 
-        || diploma === undefined 
-        || experience === undefined 
+        || description === undefined
+        || diploma === undefined
+        || experience === undefined
         || pricing === undefined) {
         res.status(400).send("Some parameters are missing.").end();
         return;
     }
 
     const authController = new AuthController();
-    
+
     const user = new User({
         id: uuidv4(),
         firstName,
