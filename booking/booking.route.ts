@@ -27,9 +27,10 @@ bookingRouter.get("/booking/:id", isAuthentified, async function(req, res) {
 });
 
 bookingRouter.post("/", isAuthentified, async function(req, res) {
-    const userId = req.body.description;
-    const providerId = req.body.images;
-    const date = req.body.type;
+    console.log(req);
+    const userId = req.body.userId;
+    const providerId = req.body.providerId;
+    const date = req.body.date;
 
     if( userId === undefined 
         || providerId === undefined 
