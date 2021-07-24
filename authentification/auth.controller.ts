@@ -1,6 +1,7 @@
 import { Provider } from "../provider/data-layer/model/provider.model";
 import { User } from "../user/data-layer/user.model";
 import { AuthService } from "./business-layer/auth.service";
+import {Session} from "../user/session/data-layer/session.model";
 
 export class AuthController {
 
@@ -20,10 +21,10 @@ export class AuthController {
     }
 
 
-    public async login(login: string, password: string): Promise<string | null> {
+    public async login(login: string, password: string): Promise<Session | null> {
         let session = await this.authService.getUser(login, password);
         if(session != undefined) {
-            return session.token;
+            return session;
         }
         return null;
     }
