@@ -4,6 +4,7 @@ import { ProviderRepository } from "../../provider/data-layer/repository/provide
 import { UserRepository } from "../../user/data-layer/user.repository";
 import { Session } from "../../user/session/data-layer/session.model";
 import { SessionRepository } from "../../user/session/data-layer/session.repository";
+import {v4 as uuidv4} from "uuid";
 
 
 export class AuthService {
@@ -38,16 +39,17 @@ export class AuthService {
                 console.log(e);
             }
         }
-        
+
         if(user != undefined) {
-            console.log("user : " + user.firstName + user.id + " hashed : " + bcrypt.hashSync(password,this.saltRounds));
-            const isSamePassword = bcrypt.compareSync(password, user.password);
+            console.log("user : " + user.firstName + user.id + " hashed : " + password);
+            const isSamePassword = bcrypt.compare(bcrypt.hashSync(password,this.saltRounds), user.password);
             if(!isSamePassword) {
                 try {
                     throw new Error('Mot de passe incorrect.');
                 }
                 catch(e) {
-                    console.log(e);
+                    console.log("goodtrdd" + e);
+                    return null;
                 }
             }
            
@@ -62,7 +64,6 @@ export class AuthService {
         
         let token = crypto.randomBytes(20).toString('hex');
         token = role + token;
-
         if(user != undefined){
             return this.sessionRepository.insert({token : token, userId: user.id});
         }

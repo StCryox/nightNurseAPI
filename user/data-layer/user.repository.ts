@@ -51,6 +51,7 @@ export class UserRepository{
     }
 
     public async getOne(login?: string, mail?: string, id?: string): Promise<User | null> {
+        console.log("here");
         UserRepository._connection = await DatabaseUtils.getConnection();
         try{
             if(UserRepository._connection){

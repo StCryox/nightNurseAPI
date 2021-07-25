@@ -93,22 +93,22 @@ export class BookingRepository{
     }
 
     public async insert(booking: Booking): Promise<Booking | null> {
+        console.log(booking);
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {
-            if(BookingRepository._connection){
-                await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
-                    (id, usderId, providerId, date, createdAt) 
-                    VALUES (?, ?, ?, ?, ?)`, [
-                    uuidv4(),
-                    booking.userId,
-                    booking.providerId,
-                    booking.date,
-                    booking.createdAt
-                ]);
-                return new Booking({
-                    ...booking
-                });
-            }
+            await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
+                (id, userId, providerId, date, updateAt, createdAt) 
+                VALUES (?, ?, ?, ?, ?, ?)`, [
+                uuidv4(),
+                booking.userId,
+                booking.providerId,
+                booking.date,
+                new Date(),
+                new Date()
+            ]);
+            return new Booking({
+                ...booking
+            });
         } catch(err) {
             console.error(err);
         }

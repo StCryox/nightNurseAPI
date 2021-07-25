@@ -1,0 +1,9 @@
+PORT=4500
+DB_HOST=localhost
+DB_DRIVER=mysql
+DB_NAME=nightnurse
+DB_USER=root
+DB_PASSWORD=root
+DB_PORT=3306
+MAIL_ADDRESS=nightnurse.pa@gmail.com
+MAIL_PASSWORD=vTFA7dnTgKMTEGZ

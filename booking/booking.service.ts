@@ -3,7 +3,8 @@ import { BookingRepository } from "./data-layer/booking.repository";
 
 export class BookingService {
 
-    private bookingRepository: BookingRepository;
+    private bookingRepository!: BookingRepository;
+
 
     constructor(){
         this.bookingRepository = new BookingRepository();

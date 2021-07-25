@@ -18,7 +18,7 @@ export class UserService {
 
     public async getUser(id: string): Promise<User | null> {
         this.userRepository = await UserRepository.getInstance();
-        return this.userRepository.getOne(id);
+        return this.userRepository.getOne(undefined,undefined,id);
     }
 
     public async getUsers(): Promise<User[] | null> {

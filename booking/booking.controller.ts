@@ -21,7 +21,7 @@ export class BookingController {
         return this.bookingService.getOneBooking(id);
     }
 
-    public async book(booking: Booking): Promise<Booking | null> {
+    public async book(booking: any): Promise<Booking | null> {
         return this.bookingService.reserve(booking);
     }
 
