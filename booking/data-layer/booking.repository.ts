@@ -96,19 +96,21 @@ export class BookingRepository{
         console.log(booking);
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {
-            await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, userId, providerId, date, updateAt, createdAt) 
-                VALUES (?, ?, ?, ?, ?, ?)`, [
-                uuidv4(),
-                booking.userId,
-                booking.providerId,
-                booking.date,
-                new Date(),
-                new Date()
-            ]);
-            return new Booking({
-                ...booking
-            });
+            if(BookingRepository._connection){
+                await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
+                    (id, userId, providerId, date, updateAt, createdAt) 
+                    VALUES (?, ?, ?, ?, ?, ?)`, [
+                    uuidv4(),
+                    booking.userId,
+                    booking.providerId,
+                    booking.date,
+                    new Date(),
+                    new Date()
+                ]);
+                return new Booking({
+                    ...booking
+                });
+            }
         } catch(err) {
             console.error(err);
         }
