@@ -155,4 +155,30 @@ export class ProviderRepository{
         }
         return null;
     }
+
+    public async getOneByUserId(userId: string): Promise<Provider | null> {
+        ProviderRepository._connection = await DatabaseUtils.getConnection();
+        try {
+            if(ProviderRepository._connection){
+                const res = await ProviderRepository._connection.query(`SELECT * FROM ${this.table} WHERE userId = "${userId}"`);
+                const data = res[0];
+                if(Array.isArray(data)) {
+                    const rows = data as RowDataPacket[];
+                    if(rows.length > 0) {
+                        const row = rows[0];
+                        return new Provider({
+                            id: "" + row["id"],
+                            userId: row["userId"],
+                            description: row["description"],
+                            updateAt: row["updateAt"],
+                            createdAt: row["createdAt"]
+                        });
+                    }
+                }
+            }
+        } catch(err) {
+            console.error(err);
+        }
+        return null;
+    }
 }

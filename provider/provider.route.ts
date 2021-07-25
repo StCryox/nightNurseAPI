@@ -15,7 +15,7 @@ providerRouter.get("/", async function(req, res) {
     res.status(200).json(providerList).end();
 });
 
-providerRouter.get("/:id", async function(req, res) {
+providerRouter.get("/providerId/:id", async function(req, res) {
     const providerId = req.params.id;
     if( providerId === undefined) {
         res.status(400).send("Id is missing.").end();
@@ -23,6 +23,17 @@ providerRouter.get("/:id", async function(req, res) {
     }
     const providerController = new ProviderController();
     const provider = await providerController.getOneProvider(providerId);
+    res.status(200).json(provider).end();
+});
+
+providerRouter.get("/userId/:id", async function(req, res) {
+    const userId = req.params.id;
+    if( userId === undefined) {
+        res.status(400).send("Id is missing.").end();
+        return;
+    }
+    const providerController = new ProviderController();
+    const provider = await providerController.getOneProviderByUserId(userId);
     res.status(200).json(provider).end();
 });
 

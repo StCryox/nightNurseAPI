@@ -29,4 +29,8 @@ export class ProviderController {
     public async removeProvider(id: string): Promise<string | null> {
        return this.providerService.deleteProvider(id);
     }
+
+    public async getOneProviderByUserId(userId: string): Promise<Provider | null> {
+        return this.providerService.getProviderByUserId(userId);
+    }
 }
