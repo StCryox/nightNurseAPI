@@ -78,6 +78,11 @@ export class ProviderService {
 
     public async createProvider(provider: Provider): Promise<Provider | null> {
         await this.getAllInstance();
+
+        if(await this.providerRepository.checkProviderExist(provider.id) !== null){
+            return null;
+        }
+
         await this.providerRepository.insert({
                 id: provider.id,
                 userId: provider.userId,
@@ -107,7 +112,6 @@ export class ProviderService {
         }
 
         if(provider.id){
-            console.log("onfbdb");
             return this.getProvider(provider.id);
         }
         return null;

@@ -4,8 +4,6 @@ import { ProviderRepository } from "../../provider/data-layer/repository/provide
 import { UserRepository } from "../../user/data-layer/user.repository";
 import { Session } from "../../user/session/data-layer/session.model";
 import { SessionRepository } from "../../user/session/data-layer/session.repository";
-import {v4 as uuidv4} from "uuid";
-
 
 export class AuthService {
 
@@ -26,8 +24,7 @@ export class AuthService {
     }
 
     public async getUser(login: string, password: string): Promise<Session | null>{
-        this.sessionRepository = await SessionRepository.getInstance();
-        this.userRepository = await UserRepository.getInstance();
+        this.getAllInstance();
         let role = "";
         const user = await this.userRepository.getOne(login);
         if(user === null) {

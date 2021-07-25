@@ -64,10 +64,10 @@ export class ProviderRepository{
         return null;
     }
 
-    public async checkProviderExist(providerId: string): Promise<string | null> {
+    public async checkProviderExist(providerId: string | undefined): Promise<string | null> {
         ProviderRepository._connection = await DatabaseUtils.getConnection();
         try {  
-            if(ProviderRepository._connection){
+            if(ProviderRepository._connection && providerId !== undefined){
                 const res = await ProviderRepository._connection.query(`SELECT * FROM ${this.table} WHERE id = "${providerId}"`);
                 const data = res[0];
                 if(Array.isArray(data)) {
