@@ -26,10 +26,9 @@ export class AuthService {
     }
 
     public async getUser(login: string, password: string): Promise<Session | null>{
-        await this.getAllInstance();
-
+        this.sessionRepository = await SessionRepository.getInstance();
+        this.userRepository = await UserRepository.getInstance();
         let role = "";
-
         const user = await this.userRepository.getOne(login);
         if(user === null) {
             try {
@@ -39,20 +38,17 @@ export class AuthService {
                 console.log(e);
             }
         }
-
         if(user != undefined) {
-            console.log("user : " + user.firstName + user.id + " hashed : " + password);
             const isSamePassword = bcrypt.compare(bcrypt.hashSync(password,this.saltRounds), user.password);
             if(!isSamePassword) {
                 try {
                     throw new Error('Mot de passe incorrect.');
                 }
                 catch(e) {
-                    console.log("goodtrdd" + e);
                     return null;
                 }
             }
-           
+
             if(user.role == "admin") {
                 role ="minad";
             }
@@ -61,12 +57,26 @@ export class AuthService {
             }
         }
 
-        
         let token = crypto.randomBytes(20).toString('hex');
         token = role + token;
         if(user != undefined){
             return this.sessionRepository.insert({token : token, userId: user.id});
         }
         return null;
+    }
+
+    public async deleteSession(token: string): Promise<string | null> {
+        this.sessionRepository = await SessionRepository.getInstance();
+
+        const session = await this.sessionRepository.getOne(token);
+        if(session === null) {
+            try {
+                throw new Error('Vous n\'êtes pas connecté.');
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        return this.sessionRepository.delete(token);
     }
 }

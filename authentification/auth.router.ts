@@ -7,6 +7,8 @@ import { Provider } from "../provider/data-layer/model/provider.model";
 import { User } from "../user/data-layer/user.model";
 import { AuthController } from "./auth.controller";
 import { isAuthentified } from "./auth.middleware";
+import {FILE} from "dns";
+import {TextDecoder} from "util";
 
 const authRouter = express.Router();
 
@@ -60,10 +62,17 @@ authRouter.post("/subscribe/client",  async function(req, res) {
         phoneNumber
     });
 
-    await authController.ClientSubscribe(user);
-
+    const userCreated = await authController.ClientSubscribe(user);
+    if(userCreated === null)
+    {
+        res.status(400);
+        res.write('Cet utilisateur existe déjà');
+        res.end();
+        return;
+    }
     res.status(201);
     res.json(user);
+    res.end();
 });
 
 authRouter.post("/subscribe/provider",  async function(req, res) {
@@ -107,7 +116,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     }
 
     const authController = new AuthController();
-   
+
     const user = new User({
         id: uuidv4(),
         firstName,
@@ -158,7 +167,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
                 createdAt: new Date()
             })
         );
-        
+
     }
 
     for(let i=0; i<pricingLen; i++){
@@ -186,7 +195,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         ProviderExperience,
         ProviderPricing
     );
-    
+
     const result = await authController.ProviderSubscribe(user, provider);
 
     res.status(201);
@@ -206,7 +215,8 @@ authRouter.post("/login", async function(req, res) {
         res.status(404).send("Account doesn't exist.").end();
     } else {
         res.json({
-            token: session
+            token: session.token,
+            userId: session.userId
         });
     }
 });
@@ -218,11 +228,15 @@ authRouter.delete("/logout", isAuthentified, async function(req, res) {
         const token = auth.slice(7);
         const result = await authController.logout(token);
         if(result === null){
-            res.status(404).send("You're not logged in.").end();
+            res.status(404).send("You're not logged in.");
+            res.end();
         }
-        res.status(200).json(result).end();
+        res.status(200).json(result);
+        res.end();
+        return;
     }
-    res.status(403).send("Access denied.").end();
+    res.status(403).send("Access denied.");
+    res.end();
 });
 
 export {

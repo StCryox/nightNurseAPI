@@ -8,16 +8,16 @@ export class DatabaseUtils {
         try{
             if(!DatabaseUtils._connection) {
                 DatabaseUtils._connection = await createConnection({
-                    host: process.env.DB_HOST,
-                    user: process.env.DB_USER,
-                    password: process.env.DB_PASSWORD,
-                    database: process.env.DB_NAME,
-                    port: Number.parseInt(process.env.DB_PORT as string)
                 });
             }
             return DatabaseUtils._connection;
         } catch(err) {
             console.error(err); 
+                host: 'localhost',
+                user: 'root',
+                password: '',
+                database: 'nightnurse',
+                port: 3306
         }
         return null;
     }

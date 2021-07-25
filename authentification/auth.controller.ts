@@ -19,11 +19,11 @@ export class AuthController {
     }
 
     public async ClientSubscribe(user: User): Promise<User | null> {
-        return this.userService.createUser(user);
+        return await this.userService.createUser(user);
     }
 
     public async ProviderSubscribe(user: User, provider: Provider): Promise<Provider | null> {
-        if(this.userService.createUser(user) === null){
+        if(await this.userService.createUser(user) === null){
             return null;
         }
         return this.providerService.createProvider(provider);
