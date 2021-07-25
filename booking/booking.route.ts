@@ -1,6 +1,7 @@
 import express from "express";
 import { isAuthentified } from "../authentification/auth.middleware";
 import { BookingController } from "./booking.controller";
+import {v4 as uuidv4} from 'uuid'
 
 const bookingRouter = express.Router();
 
@@ -27,7 +28,7 @@ bookingRouter.get("/booking/:id", isAuthentified, async function(req, res) {
 });
 
 bookingRouter.post("/", isAuthentified, async function(req, res) {
-    console.log(req);
+    console.log(req.body);
     const userId = req.body.userId;
     const providerId = req.body.providerId;
     const date = req.body.date;
@@ -40,12 +41,14 @@ bookingRouter.post("/", isAuthentified, async function(req, res) {
     }
 
     const bookingController = new BookingController();
-
+    const id = uuidv4();
     const booking = await bookingController.book({
+        id,
         userId,
         providerId,
         date
     });
+    console.log(JSON.stringify(booking));
 
     res.status(201);
     res.json(booking);
@@ -119,7 +122,7 @@ bookingRouter.delete("/:id", isAuthentified, async function(req, res) {
     res.status(200).json(result).end();
 });
 
-bookingRouter.post("/create-payment-intent", async (req, res) => {
+bookingRouter.post("/create-payment-intent", isAuthentified,async (req, res) => {
 
     const  items = req.body;
 

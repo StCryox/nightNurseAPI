@@ -93,7 +93,6 @@ export class BookingRepository{
     }
 
     public async insert(booking: Booking): Promise<Booking | null> {
-        console.log(booking);
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {
             if(BookingRepository._connection){
