@@ -72,16 +72,17 @@ export class AuthService {
                 console.log(e);
             }
         }
-        
+
         if(user != undefined) {
-            console.log("user : " + user.firstName + user.id + " hashed : " + bcrypt.hashSync(password,this.saltRounds));
-            const isSamePassword = bcrypt.compareSync(password, user.password);
+            console.log("user : " + user.firstName + user.id + " hashed : " + password);
+            const isSamePassword = bcrypt.compare(bcrypt.hashSync(password,this.saltRounds), user.password);
             if(!isSamePassword) {
                 try {
                     throw new Error('Mot de passe incorrect.');
                 }
                 catch(e) {
-                    console.log(e);
+                    console.log("goodtrdd" + e);
+                    return null;
                 }
             }
            

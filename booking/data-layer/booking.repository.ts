@@ -41,7 +41,7 @@ export class BookingRepository{
     public async getAllById(userId: string): Promise<Booking[] | null>{
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {  
-            const res = await BookingRepository._connection.query(`SELECT * FROM ${this.table} WHERE userId = "${userId}"`);
+            const res = await BookingRepository._connection.query(`SELECT * FROM ${this.table} WHERE userId = "${userId}" ORDER BY date DESC`);
             const data = res[0];
                 if(Array.isArray(data)) {
                     return (data as RowDataPacket[]).map(function(row) {
@@ -83,16 +83,18 @@ export class BookingRepository{
     }
 
     public async insert(booking: Booking): Promise<Booking | null> {
+        console.log(booking);
         BookingRepository._connection = await DatabaseUtils.getConnection();
         try {
             await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, usderId, providerId, date, createdAt) 
-                VALUES (?, ?, ?, ?, ?)`, [
+                (id, userId, providerId, date, updateAt, createdAt) 
+                VALUES (?, ?, ?, ?, ?, ?)`, [
                 uuidv4(),
                 booking.userId,
                 booking.providerId,
                 booking.date,
-                booking.createdAt
+                new Date(),
+                new Date()
             ]);
             return new Booking({
                 ...booking
