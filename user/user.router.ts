@@ -1,7 +1,6 @@
 import express from "express";
 import { isAuthentified } from "../authentification/auth.middleware";
 import { UserController } from "./user.controller";
-import {TextDecoder} from "util";
 
 const userRouter = express.Router();
 
@@ -89,21 +88,20 @@ userRouter.delete("/:id", isAuthentified, async function(req, res) {
     res.status(200).json(result).end();
 });
 
-userRouter.get("/file/:fileName", async(req: any, res: any) => {
+userRouter.get("/file/:fileName", async(req: express.Request, res: express.Response) => {
     let file = 'images/' + req.params.fileName;
-    let finaleData = '';
     const fs = require('fs');
     try {
-        fs.readFile(file, async (err: any, data: any) => {
+        fs.readFile(file, async (err: Error, data: any) => {
             if (err) {
                 try {
-                    await fs.readFile('images/default.jpg', async (error: any, defaultData: any) => {
+                    await fs.readFile('images/default.jpg', async (error: Error, defaultData: any) => {
                         if (error) return console.log(error);
-                        await res.write(defaultData, 'binary');
-                        await res.status(404).end(null, 'binary');
+                        res.write(defaultData, 'binary');
+                        res.status(404).end(null, 'binary');
                     });
-                } catch (err) {
-                    console.error(err)
+                } catch (e) {
+                    console.error(e)
                 }
             }
             if (data !== undefined) {//si image pas trouvée, on met l'image par défaut
