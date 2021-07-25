@@ -5,7 +5,7 @@ import {v4 as uuidv4} from "uuid";
 export class SessionRepository {
 
     private table = "session";
-    private static _connection: Connection;
+    private static _connection: Connection | null;
     private static _instance: SessionRepository;
 
     public static async getInstance(): Promise<SessionRepository> {
@@ -17,20 +17,26 @@ export class SessionRepository {
 
     public async getOne(token: string): Promise<Session | null> {
         SessionRepository._connection = await DatabaseUtils.getConnection();
-        const res = await SessionRepository._connection.query(`SELECT * FROM ${this.table} WHERE token = "${token}"`);
-        const data = res[0];
-        if(Array.isArray(data)) {
-            const rows = data as RowDataPacket[];
-            if(rows.length > 0) {
-                const row = rows[0];
-                return new Session({
-                    id: row["id"],
-                    token: row["token"],
-                    updateAt: row["updateAt"],
-                    createdAt: row["createdAt"],
-                    userId: row["userId"]
-                });
+        try{
+            if(SessionRepository._connection){
+                const res = await SessionRepository._connection.query(`SELECT * FROM ${this.table} WHERE token = "${token}"`);
+                const data = res[0];
+                if(Array.isArray(data)) {
+                    const rows = data as RowDataPacket[];
+                    if(rows.length > 0) {
+                        const row = rows[0];
+                        return new Session({
+                            id: row["id"],
+                            token: row["token"],
+                            updateAt: row["updateAt"],
+                            createdAt: row["createdAt"],
+                            userId: row["userId"]
+                        });
+                    }
+                }
             }
+        } catch(err) {
+            console.error(err);
         }
         return null;
     }
@@ -38,31 +44,40 @@ export class SessionRepository {
     public async insert(session: Session): Promise<Session | null> {
         SessionRepository._connection = await DatabaseUtils.getConnection();
         try {
-           await SessionRepository._connection.execute(`INSERT INTO ${this.table} 
-                (id, token, createdAt, userId) 
-                VALUES (?, ?, ?, ?)`, [
-               uuidv4(),
-                session.token,
-                new Date(),
-                session.userId
-            ]);
-            return new Session({
-                ...session
-            });
+            if(SessionRepository._connection){
+                console.log("values : " + session.id + " " +
+                    session.token  + " " +
+                    Date.now() + " " +
+                    session.userId)
+
+            await SessionRepository._connection.execute(`INSERT INTO ${this.table} 
+                    (id, token, createdAt, userId) 
+                    VALUES (?, ?, ?, ?)`, [
+                    uuidv4(),
+                    session.token,
+                    new Date(),
+                    session.userId
+                ]);
+                return new Session({
+                    ...session
+                });
+            }
         } catch(err) {
             console.error(err);
-            return null;
         }
+        return null;
     }
 
     public async delete(token: string): Promise<string | null> {
         SessionRepository._connection = await DatabaseUtils.getConnection();
         try {
-            await SessionRepository._connection.query(`DELETE FROM ${this.table} WHERE token = "${token}"`);           
-            return token;
+            if(SessionRepository._connection){
+                await SessionRepository._connection.query(`DELETE FROM ${this.table} WHERE token = "${token}"`);           
+                return token;
+            }
        } catch(err) {
            console.error(err); 
-           return null;
        }
+       return null;
     }
 }

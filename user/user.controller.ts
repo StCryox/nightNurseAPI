@@ -2,7 +2,6 @@ import { User } from "../user/data-layer/user.model";
 import { Session } from "../user/session/data-layer/session.model";
 import { UserService } from "./business-layer/user.service";
 
-
 export class UserController {
 
     private userService: UserService;

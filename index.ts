@@ -7,6 +7,7 @@ import {buildRoutes} from "./api";
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const app: Express = express();
+
 var corsOptions = {
     origin: 'http://localhost:4200',
     optionsSuccessStatus: 200, // For legacy browser support

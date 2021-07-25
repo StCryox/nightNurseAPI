@@ -19,8 +19,11 @@
   "homepage": "https://github.com/StCryox/nightNurseAPI#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "mysql2": "^2.2.5",
+    "stripe": "^8.165.0",
     "ts-node": "^10.0.0",
     "uuid": "^8.3.2"
   },

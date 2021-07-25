@@ -5,6 +5,8 @@ import { ExperienceRepository } from "../data-layer/repository/experience.reposi
 import { PricingRepository } from "../data-layer/repository/pricing.repository";
 import { ProviderRepository } from "../data-layer/repository/provider.repository";
 import {v4 as uuidv4} from 'uuid';
+import { Experience } from "../data-layer/model/experience.model";
+import { Pricing } from "../data-layer/model/pricing.model";
 
 export class ProviderService {
 
@@ -27,65 +29,128 @@ export class ProviderService {
         this.pricingRepository = await PricingRepository.getInstance();
     }
 
-    public async getProviders(): Promise<Provider[]> {
-
-        const providerData = await this.providerRepository.getAll();
-        //Map each lines into object and put in providerData
-        
-        this.diplomaRepository.get(providerData.diplomaId)
-        return [];
-
-    }
-
-    public async getProvider(id: string): Promise<Provider> {
+    public async getProviders(): Promise<Provider[] | null> {
         await this.getAllInstance();
+        let providerList: Provider[] = [];
+        let diploma: Diploma[] | null = [];
+        let experience: Experience[] | null = [];
+        let pricing: Pricing[] | null = [];
 
-        const providerData = await this.providerRepository.getOne(id);
-        const diploma = await this.diplomaRepository.get( providerData.diplomaId);
-        const experience = await this.experienceRepository.get( providerData.experienceId);
-        const pricing = await this.pricingRepository.get( providerData.pricingId);
-        //Map each lines into object and put in new Provider
-        return new Provider(providerData, diploma[0], experience[0], pricing[0]);
+        const provider: Provider[] | null = await this.providerRepository.getAll();
+
+        if(provider){
+            let providerLen = Object.keys(provider).length;
+
+            for(let i=0; i<providerLen; i++){
+                diploma = await this.diplomaRepository.get(provider[i].id);
+
+                experience = await this.experienceRepository.get(provider[i].id);
+          
+                pricing = await this.pricingRepository.get(provider[i].id);
+                if(diploma &&experience && pricing){
+                    providerList.push(new Provider(provider[i], diploma, experience, pricing));
+                }
+            }
+        }
+        return providerList;
     }
 
-    public async create(provider: Provider): Promise<Provider> {
-        this.providerRepository = await ProviderRepository.getInstance();
-        this.diplomaRepository = await DiplomaRepository.getInstance();
-        this.experienceRepository = await ExperienceRepository.getInstance();
-        this.pricingRepository = await PricingRepository.getInstance();
+    public async getProvider(providerId: string): Promise<Provider | null> {
+        await this.getAllInstance();
+        const provider = await this.providerRepository.getOne(providerId);
+        const diploma: Diploma[] | null =  await this.diplomaRepository.get(providerId);
+        const experience: Experience[] | null = await this.experienceRepository.get(providerId);
+        const pricing: Pricing[] | null =  await this.pricingRepository.get(providerId);
 
-        provider.diploma?.filePath;
-      
-        
-        this.diplomaRepository.insert(provider.diploma.id);
-        this.experienceRepository.insert(provider.experience);
-        this.pricingRepository.insert(provider.pricing);
-        return this.providerRepository.insert(provider);
+        if(provider && diploma &&experience && pricing){
+            return new Provider(provider, diploma, experience, pricing);
+        }
+        return null;
     }
 
-    public async update(id: string, provider: Provider): Promise<Provider> {
-        this.providerRepository = await ProviderRepository.getInstance();
-        this.diplomaRepository = await DiplomaRepository.getInstance();
-        this.experienceRepository = await ExperienceRepository.getInstance();
-        this.pricingRepository = await PricingRepository.getInstance();
-
-        this.diplomaRepository.update(id, provider.diploma);
-        this.experienceRepository.update(id, provider.experience);
-        this.pricingRepository.update(id, provider.pricing);
-        return this.providerRepository.update(id, provider);
+    public async setDiplomaVerifiction(userId: string, verified: boolean | null): Promise<boolean | null> {
+        return this.providerRepository.verifyProvider(userId, verified);
     }
 
-    public async delete(id: string): Promise<string> {
-        this.providerRepository = await ProviderRepository.getInstance();
-        this.diplomaRepository = await DiplomaRepository.getInstance();
-        this.experienceRepository = await ExperienceRepository.getInstance();
-        this.pricingRepository = await PricingRepository.getInstance();
-        
-        const provider = await this.getProvider(id);
+    public async createProvider(provider: Provider): Promise<Provider | null> {
+        await this.getAllInstance();
+        await this.providerRepository.insert({
+                id: provider.id,
+                userId: provider.userId,
+                description: provider.description,
+                verified: provider.verified,
+        });
 
-        this.diplomaRepository.delete(provider.diplomaId);
-        this.experienceRepository.delete(provider.experienceId);
-        this.pricingRepository.delete(provider.pricingId);
+        let diplomaLen, experienceLen ,pricingLen = 0;
+
+        if(provider.diploma){
+            diplomaLen =  Object.keys(provider.diploma).length;
+            for(let i=0; i<diplomaLen; i++){
+                await this.diplomaRepository.insert(provider.diploma[i]);
+            }
+        }
+
+        if(provider.experience){
+            experienceLen =  Object.keys(provider.experience).length;
+            for(let i=0; i<experienceLen; i++){
+                await this.experienceRepository.insert(provider.experience[i]);
+            }
+        }
+        if(provider.pricing){
+            pricingLen =  Object.keys(provider.pricing).length;
+            for(let i=0; i<pricingLen; i++){
+                await this.pricingRepository.insert(provider.pricing[i]);
+            }
+        }
+
+        if(provider.id){
+            return this.getProvider(provider.id);
+        }
+        return null;
+    }
+
+    public async updateProvider(id: string, provider: Provider): Promise<Provider | null> {
+        await this.getAllInstance();
+        await this.providerRepository.update(id, {
+            id: provider.id,
+            userId: provider.userId,
+            description: provider.description,
+            verified: provider.verified,
+        });
+
+        let diplomaLen, experienceLen ,pricingLen = 0;
+
+        if(provider.diploma){
+            diplomaLen =  Object.keys(provider.diploma).length;
+            for(let i=0; i<diplomaLen; i++){
+                await this.diplomaRepository.update(provider.diploma[i].id, provider.diploma[i]);
+            }
+        }
+
+        if(provider.experience){
+            experienceLen =  Object.keys(provider.experience).length;
+            for(let i=0; i<experienceLen; i++){
+                await this.experienceRepository.update(provider.experience[i].id, provider.experience[i]);
+            }
+        }
+        if(provider.pricing){
+            pricingLen =  Object.keys(provider.pricing).length;
+            for(let i=0; i<pricingLen; i++){
+                await this.pricingRepository.update(provider.pricing[i].id, provider.pricing[i]);
+            }
+        }
+
+        if(provider.id){
+            return this.getProvider(provider.id);
+        }
+        return null;
+    }
+
+    public async deleteProvider(id: string): Promise<string | null> {
+        await this.getAllInstance();
+        await this.diplomaRepository.delete(id);
+        await this.experienceRepository.delete(id);
+        await this.pricingRepository.delete(id);
         return this.providerRepository.delete(id);
     }
 }

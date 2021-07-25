@@ -9,7 +9,6 @@ export class BookingService {
         this.bookingRepository = new BookingRepository();
     }
 
-
     public async getAllBookings(): Promise<Booking[] | null> {
         return this.bookingRepository.getAll();
     }
