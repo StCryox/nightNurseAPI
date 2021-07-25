@@ -49,8 +49,10 @@ export async function isProvider(req: express.Request, res: express.Response, ne
         if(provider === "vider") {
             const providerController = new ProviderController();
             let providerId = await providerController.getOneProvider(id);
-            if(providerId.id == id){
-                next();
+            if(providerId != null){
+                if(providerId.id == id){
+                    next();
+                }
             }
             return;
         } else {

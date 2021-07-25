@@ -1,39 +1,25 @@
 import express from "express";
 import { isAdministrator, isAuthentified } from "../authentification/auth.middleware";
-import { ProviderController } from "../provider/provider.controller";
+import { AdminController } from "./admin.controller";
 
 const adminRouter = express.Router();
 
 adminRouter.put("/:id", isAuthentified, isAdministrator, async function(req, res) {
-    const id = req.params.id;
-    const userId = req.body.userId;
-    const description = req.body.description;
-    const diploma = req.body.diploma;
-    const experience = req.body.experience;
-    const pricing = req.body.pricing;
+    const userId = req.params.id;
+    const verified = req.body.verified;
     
-    if( id === undefined
-        || userId === undefined 
-        || description === undefined 
-        || diploma === undefined 
-        || experience === undefined 
-        || pricing === undefined) {
+    if( userId === undefined
+        || verified === undefined) {
         res.status(400).send("Some parameters are missing.").end();
         return;
     }
 
-    const providerController = new ProviderController();
+    const adminController = new AdminController();
 
-    const provider = await providerController.editProvider(id, {
-        userId,
-        description,
-        diploma,
-        experience,
-        pricing
-    });
+    const result = await adminController.verifyDiploma(userId, verified);
 
     res.status(201);
-    res.json(provider);
+    res.json(result);
 
 });
 

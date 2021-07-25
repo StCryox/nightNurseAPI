@@ -80,8 +80,8 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     const city = req.body.city;
     const province = req.body.province;
     const phoneNumber = req.body.phoneNumber;
-    const verified = null;
     const description = req.body.description;
+    const verified = null;
     const diploma = req.body.diploma;
     const experience = req.body.experience;
     const pricing = req.body.pricing;
@@ -107,7 +107,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     }
 
     const authController = new AuthController();
-
+   
     const user = new User({
         id: uuidv4(),
         firstName,
@@ -125,44 +125,68 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
         phoneNumber
     });
 
+
     let providerId = uuidv4();
+    let diplomaLen = Object.keys(diploma).length;
+    let experienceLen = Object.keys(experience).length;
+    let pricingLen = Object.keys(pricing).length;
+    let ProviderDiploma: Diploma[] = [];
+    let ProviderExperience: Experience[] = [];
+    let ProviderPricing: Pricing[] = [];
 
-    const ProviderDiploma = new Diploma({
-        id: uuidv4(),
-        providerId: providerId,
-        filename: diploma.filename,
-        filePath: diploma.filePath
-    });
+    for(let i=0; i<diplomaLen; i++){
+        ProviderDiploma.push(
+            new Diploma({
+                id: uuidv4(),
+                providerId: providerId,
+                filename: diploma[i].filename,
+                filePath: diploma[i].filePath,
+                createdAt: new Date()
+            })
+        );
+    }
 
-    const ProviderExperience = new Experience({
-        id: uuidv4(),
-        providerId: providerId,
-        startYear: experience.startYear,
-        endYear: experience.endYear,
-        title: experience.title,
-        description: experience.experience
-    });
+    for(let i=0; i<experienceLen; i++){
+        ProviderExperience.push(
+            new Experience({
+                id: uuidv4(),
+                providerId: providerId,
+                startYear: experience[i].startYear,
+                endYear: experience[i].endYear,
+                title: experience[i].title,
+                description: experience[i].experience,
+                createdAt: new Date()
+            })
+        );
+        
+    }
 
-    const ProviderPricing = new Pricing({
-        id: uuidv4(),
-        providerId: providerId,
-        date: pricing.date,
-        startHour: pricing.startHour,
-        endHour: pricing.endHour,
-        price: pricing.price,
-        hourlyPrice: pricing.hourlyPrice
-    });
+    for(let i=0; i<pricingLen; i++){
+        ProviderPricing.push(
+            new Pricing({
+                id: uuidv4(),
+                providerId: providerId,
+                date: pricing[i].date,
+                startHour: pricing[i].startHour,
+                endHour: pricing[i].endHour,
+                price: pricing[i].price,
+                hourlyPrice: pricing[i].hourlyPrice,
+                createdAt: new Date()
+            })
+        );
+    }
 
     const provider = new Provider({
         id: providerId,
         userId: user.id,
         description,
-        verified,
-        diploma: ProviderDiploma,
-        experience: ProviderExperience,
-        pricing: ProviderPricing
-    });
-
+        verified
+    },
+        ProviderDiploma,
+        ProviderExperience,
+        ProviderPricing
+    );
+    
     const result = await authController.ProviderSubscribe(user, provider);
 
     res.status(201);

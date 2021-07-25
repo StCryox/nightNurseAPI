@@ -1,23 +1,28 @@
 import express from "express";
+import {v4 as uuidv4} from 'uuid';
 import { isAuthentified, isProvider } from "../authentification/auth.middleware";
+import { Diploma } from "./data-layer/model/diploma.model";
+import { Experience } from "./data-layer/model/experience.model";
+import { Pricing } from "./data-layer/model/pricing.model";
+import { Provider } from "./data-layer/model/provider.model";
 import { ProviderController } from "./provider.controller";
 
 const providerRouter = express.Router();
 
-providerRouter.get("/", isAuthentified, async function(req, res) {
+providerRouter.get("/", async function(req, res) {
     const providerController = new ProviderController();
     const providerList = await providerController.getProviderList();
     res.status(200).json(providerList).end();
 });
 
-providerRouter.get("/:id", isAuthentified, async function(req, res) {
-    const id = req.params.id;
-    if( id === undefined) {
+providerRouter.get("/:id", async function(req, res) {
+    const providerId = req.params.id;
+    if( providerId === undefined) {
         res.status(400).send("Id is missing.").end();
         return;
     }
     const providerController = new ProviderController();
-    const provider = await providerController.getOneProvider(id);
+    const provider = await providerController.getOneProvider(providerId);
     res.status(200).json(provider).end();
 });
 
@@ -25,6 +30,7 @@ providerRouter.put("/:id", isAuthentified, isProvider, async function(req, res) 
     const id = req.params.id;
     const userId = req.body.userId;
     const description = req.body.description;
+    const verified = req.body.verified;
     const diploma = req.body.diploma;
     const experience = req.body.experience;
     const pricing = req.body.pricing;
@@ -32,6 +38,7 @@ providerRouter.put("/:id", isAuthentified, isProvider, async function(req, res) 
     if( id === undefined
         || userId === undefined 
         || description === undefined 
+        || verified === undefined 
         || diploma === undefined 
         || experience === undefined 
         || pricing === undefined) {
@@ -41,16 +48,70 @@ providerRouter.put("/:id", isAuthentified, isProvider, async function(req, res) 
 
     const providerController = new ProviderController();
 
-    const provider = await providerController.editProvider(id, {
-        userId,
+    let diplomaLen = Object.keys(diploma).length;
+    let experienceLen = Object.keys(experience).length;
+    let pricingLen = Object.keys(pricing).length;
+    let ProviderDiploma: Diploma[] = [];
+    let ProviderExperience: Experience[] = [];
+    let ProviderPricing: Pricing[] = [];
+
+    for(let i=0; i<diplomaLen; i++){
+        ProviderDiploma.push(
+            new Diploma({
+                id: diploma[i].id || uuidv4(),
+                providerId: id,
+                filename: diploma[i].filename,
+                filePath: diploma[i].filePath,
+                updateAt: new Date()
+            })
+        );
+    }
+
+    for(let i=0; i<experienceLen; i++){
+        ProviderExperience.push(
+            new Experience({
+                id:  experience[i].id || uuidv4(),
+                providerId: id,
+                startYear: experience[i].startYear,
+                endYear: experience[i].endYear,
+                title: experience[i].title,
+                description: experience[i].experience,
+                updateAt: new Date()
+            })
+        );
+        
+    }
+
+    for(let i=0; i<pricingLen; i++){
+        ProviderPricing.push(
+            new Pricing({
+                id: pricing[i].id || uuidv4(),
+                providerId: id,
+                date: pricing[i].date,
+                startHour: pricing[i].startHour,
+                endHour: pricing[i].endHour,
+                price: pricing[i].price,
+                hourlyPrice: pricing[i].hourlyPrice,
+                updateAt: new Date()
+            })
+        );
+    }
+
+    const provider = new Provider({
+        id: id,
+        userId: userId,
         description,
-        diploma,
-        experience,
-        pricing
-    });
+        verified
+    },
+        ProviderDiploma,
+        ProviderExperience,
+        ProviderPricing
+    );
+
+    const result = await providerController.editProvider(id, provider);
 
     res.status(201);
-    res.json(provider);
+    res.json(result);
 
 });
 
@@ -59,95 +120,6 @@ providerRouter.delete("/:id", isAuthentified, async function(req, res) {
     const result = await providerController.removeProvider(req.params.id);
     res.status(200).json(result).end();
 });
-
-/*providerRouter.get("/like", isAuthentified, async function(req, res) {
-    const providerController = new ProviderController();
-    const providerList = await providerController.getProviderList();
-    res.status(200).json(providerList).end();
-});
-
-providerRouter.get("/like/:id", isAuthentified, async function(req, res) {
-    const id = req.params.id;
-    if( id === undefined) {
-        res.status(400).send("Id is missing.").end();
-        return;
-    }
-    const providerController = new ProviderController();
-    const provider = await providerController.getOneProvider(id);
-    res.status(200).json(provider).end();
-});
-
-providerRouter.post("/like", isAuthentified, isProvider, async function(req, res) {
-    const id = req.params.id;
-    const userId = req.body.userId;
-    const description = req.body.description;
-    const diploma = req.body.diploma;
-    const experience = req.body.experience;
-    const pricing = req.body.pricing;
-    
-    if( id === undefined
-        || userId === undefined 
-        || description === undefined 
-        || diploma === undefined 
-        || experience === undefined 
-        || pricing === undefined) {
-        res.status(400).send("Some parameters are missing.").end();
-        return;
-    }
-
-    const providerController = new ProviderController();
-
-    const provider = await providerController.editProvider(id, {
-        userId,
-        description,
-        diploma,
-        experience,
-        pricing
-    });
-
-    res.status(201);
-    res.json(provider);
-
-});
-
-providerRouter.put("/like/:id", isAuthentified, isProvider, async function(req, res) {
-    const id = req.params.id;
-    const userId = req.body.userId;
-    const description = req.body.description;
-    const diploma = req.body.diploma;
-    const experience = req.body.experience;
-    const pricing = req.body.pricing;
-    
-    if( id === undefined
-        || userId === undefined 
-        || description === undefined 
-        || diploma === undefined 
-        || experience === undefined 
-        || pricing === undefined) {
-        res.status(400).send("Some parameters are missing.").end();
-        return;
-    }
-
-    const providerController = new ProviderController();
-
-    const provider = await providerController.editProvider(id, {
-        userId,
-        description,
-        diploma,
-        experience,
-        pricing
-    });
-
-    res.status(201);
-    res.json(provider);
-
-});
-
-providerRouter.delete("/like/:id", isAuthentified, async function(req, res) {
-    const providerController = new ProviderController();
-    const result = await providerController.removeProvider(req.params.id);
-    res.status(200).json(result).end();
-});*/
 
 export {
     providerRouter

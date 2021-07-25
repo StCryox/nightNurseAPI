@@ -7,11 +7,11 @@ export interface IProvider {
     userId?: string;
     description?: string;
     verified?: boolean | null;
-    diplomaId?: string;
-    experienceId?: string;
-    pricingId?: string;
     updateAt?: Date;
-    createdAt?: Date;
+    createdAt?: Date; 
+    diploma?: Diploma[];
+    experience?: Experience[];
+    pricing?: Pricing[];
 }
 
 export class Provider implements IProvider {
@@ -20,31 +20,14 @@ export class Provider implements IProvider {
     description?: string;
     verified?: boolean | null;
 
-    diplomaId?: string;
-    experienceId?: string;
-    pricingId?: string;
     updateAt?: Date;    
     createdAt?: Date;
 
-    diploma?: { 
-        filename: string; 
-        filePath: string; 
-    };
-    experience?: { 
-        startYear: number; 
-        endYear: number; 
-        title: string; 
-        description: string; 
-    };
-    pricing?: { 
-        date: Date; 
-        startHour: number; 
-        endHour: number; 
-        price: number; 
-    };
+    diploma?: Diploma[];
+    experience?: Experience[];
+    pricing?: Pricing[];
 
-    constructor(provider: Provider, diploma?: Diploma, experience?: Experience, pricing?: Pricing) {
-        if(diploma && experience && pricing){
+    constructor(provider: Provider, diploma?: Diploma[], experience?: Experience[], pricing?: Pricing[]) {
             this.id = provider.id;
             this.userId = provider.userId;
             this.description = provider.description;
@@ -54,16 +37,6 @@ export class Provider implements IProvider {
             this.pricing = pricing;
             this.updateAt = provider.updateAt;
             this.createdAt = new Date();
-        }
-        this.id = provider.id;
-        this.userId = provider.userId;
-        this.description = provider.description;
-        this.verified = provider.verified;
-        this.diplomaId = provider.diplomaId;
-        this.experienceId = provider.experienceId;
-        this.pricingId = provider.pricingId;
-        this.updateAt = provider.updateAt;
-        this.createdAt = new Date();
     }
 }
 
