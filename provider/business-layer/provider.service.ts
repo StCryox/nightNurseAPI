@@ -7,6 +7,7 @@ import { ProviderRepository } from "../data-layer/repository/provider.repository
 import {v4 as uuidv4} from 'uuid';
 import { Experience } from "../data-layer/model/experience.model";
 import { Pricing } from "../data-layer/model/pricing.model";
+import e from "express";
 
 export class ProviderService {
 
@@ -45,7 +46,7 @@ export class ProviderService {
                 diploma = await this.diplomaRepository.get(provider[i].id);
 
                 experience = await this.experienceRepository.get(provider[i].id);
-          
+
                 pricing = await this.pricingRepository.get(provider[i].id);
                 if(diploma &&experience && pricing){
                     providerList.push(new Provider(provider[i], diploma, experience, pricing));
@@ -57,14 +58,17 @@ export class ProviderService {
 
     public async getProvider(providerId: string): Promise<Provider | null> {
         await this.getAllInstance();
+        console.log("userId : " + providerId);
         const provider = await this.providerRepository.getOne(providerId);
         const diploma: Diploma[] | null =  await this.diplomaRepository.get(providerId);
         const experience: Experience[] | null = await this.experienceRepository.get(providerId);
         const pricing: Pricing[] | null =  await this.pricingRepository.get(providerId);
 
         if(provider && diploma &&experience && pricing){
+
             return new Provider(provider, diploma, experience, pricing);
         }
+        console.log("null");
         return null;
     }
 
@@ -82,7 +86,6 @@ export class ProviderService {
         });
 
         let diplomaLen, experienceLen ,pricingLen = 0;
-
         if(provider.diploma){
             diplomaLen =  Object.keys(provider.diploma).length;
             for(let i=0; i<diplomaLen; i++){
@@ -104,6 +107,7 @@ export class ProviderService {
         }
 
         if(provider.id){
+            console.log("onfbdb");
             return this.getProvider(provider.id);
         }
         return null;

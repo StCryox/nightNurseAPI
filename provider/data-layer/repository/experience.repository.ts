@@ -45,6 +45,7 @@ export class ExperienceRepository{
         ExperienceRepository._connection = await DatabaseUtils.getConnection();
         try {
             if(ExperienceRepository._connection){
+                console.log("prout " + JSON.stringify(experience));
                 await ExperienceRepository._connection.execute(`INSERT INTO ${this.table} 
                     (id, providerId, startYear, endYear, title, description, createdAt) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)`, [

@@ -38,11 +38,11 @@ export class ProviderRepository{
         return null;
     }
 
-    public async getOne(userId: string): Promise<Provider | null> {
+    public async getOne(providerId: string): Promise<Provider | null> {
         ProviderRepository._connection = await DatabaseUtils.getConnection();
         try {  
             if(ProviderRepository._connection){
-                const res = await ProviderRepository._connection.query(`SELECT * FROM ${this.table} WHERE userId = "${userId}"`);
+                const res = await ProviderRepository._connection.query(`SELECT * FROM ${this.table} WHERE id = "${providerId}"`);
                 const data = res[0];
                 if(Array.isArray(data)) {
                     const rows = data as RowDataPacket[];
@@ -95,7 +95,7 @@ export class ProviderRepository{
                     provider.id,
                     provider.userId,
                     provider.description,
-                    provider.createdAt
+                    new Date()
                 ]);
                 return new Provider({
                     ...provider

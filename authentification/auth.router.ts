@@ -163,11 +163,10 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
                 startYear: experience[i].startYear,
                 endYear: experience[i].endYear,
                 title: experience[i].title,
-                description: experience[i].experience,
+                description: experience[i].description,
                 createdAt: new Date()
             })
         );
-
     }
 
     for(let i=0; i<pricingLen; i++){
@@ -188,7 +187,7 @@ authRouter.post("/subscribe/provider",  async function(req, res) {
     const provider = new Provider({
         id: providerId,
         userId: user.id,
-        description,
+        description: description,
         verified
     },
         ProviderDiploma,
