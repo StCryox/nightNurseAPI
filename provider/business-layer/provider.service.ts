@@ -58,7 +58,6 @@ export class ProviderService {
 
     public async getProvider(providerId: string): Promise<Provider | null> {
         await this.getAllInstance();
-        console.log("userId : " + providerId);
         const provider = await this.providerRepository.getOne(providerId);
         const diploma: Diploma[] | null =  await this.diplomaRepository.get(providerId);
         const experience: Experience[] | null = await this.experienceRepository.get(providerId);
@@ -68,7 +67,6 @@ export class ProviderService {
 
             return new Provider(provider, diploma, experience, pricing);
         }
-        console.log("null");
         return null;
     }
 
@@ -160,5 +158,17 @@ export class ProviderService {
         await this.experienceRepository.delete(id);
         await this.pricingRepository.delete(id);
         return this.providerRepository.delete(id);
+    }
+
+    public async getProviderByUserId(userId: string): Promise<Provider | null> {
+        await this.getAllInstance();
+        const provider = await this.providerRepository.getOneByUserId(userId);
+        const diploma: Diploma[] | null =  await this.diplomaRepository.get(provider?.id);
+        const experience: Experience[] | null = await this.experienceRepository.get(provider?.id);
+        const pricing: Pricing[] | null =  await this.pricingRepository.get(provider?.id);
+        if(provider && diploma &&experience && pricing){
+            return new Provider(provider, diploma, experience, pricing);
+        }
+        return null;
     }
 }
