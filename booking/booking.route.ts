@@ -2,6 +2,8 @@ import express from "express";
 import { isAuthentified } from "../authentification/auth.middleware";
 import { BookingController } from "./booking.controller";
 import {v4 as uuidv4} from 'uuid'
+import {ProviderController} from "../provider/provider.controller";
+import {Pricing} from "../provider/data-layer/model/pricing.model";
 
 const bookingRouter = express.Router();
 
@@ -20,6 +22,23 @@ bookingRouter.get("/userBookings/:userId", isAuthentified, async function(req, r
     res.status(200).json(userBookings).end();
 });
 
+bookingRouter.get("/providerBookings/:userId", isAuthentified, async function(req, res) {
+    const userId: string = req.params.userId;
+    const bookingController = new BookingController();
+    const providerController = new ProviderController();
+    const provider = await providerController.getOneProviderByUserId(userId);
+    const userBookings = await bookingController.getAllProviderBookingsById(provider?.id);
+    res.status(200).json(userBookings).end();
+});
+
+bookingRouter.get("/provider/date", isAuthentified, async function(req, res) {
+    const providerId: string = req.body.providerId;
+    const date: string = req.body.date;
+    const bookingController = new BookingController();
+    const userBookings = await bookingController.getAllProviderBookingsByIdAndDate(providerId, date);
+    res.status(200).json(userBookings).end();
+});
+
 bookingRouter.get("/booking/:id", isAuthentified, async function(req, res) {
     const id: string = req.body.id;
     const bookingController = new BookingController();
@@ -32,20 +51,21 @@ bookingRouter.post("/", isAuthentified, async function(req, res) {
     const userId = req.body.userId;
     const providerId = req.body.providerId;
     const date = req.body.date;
-
+    const pricingId = req.body.pricingId;
     if( userId === undefined 
         || providerId === undefined 
-        || date === undefined) {
+        || date === undefined
+        || pricingId === undefined) {
         res.status(400).send("Some parameters are missing.").end();
         return;
     }
-
     const bookingController = new BookingController();
     const id = uuidv4();
     const booking = await bookingController.book({
         id,
         userId,
         providerId,
+        pricingId,
         date
     });
     console.log(JSON.stringify(booking));
@@ -60,6 +80,7 @@ bookingRouter.put("/:id", isAuthentified, async function(req, res) {
     const userId = req.body.description;
     const providerId = req.body.images;
     const date = req.body.type;
+    const pricingId = req.body.pricingId;
     const userMail = req.body.mail;
     const providerMail = req.body.providerMail;
 
@@ -75,7 +96,8 @@ bookingRouter.put("/:id", isAuthentified, async function(req, res) {
     const booking = await bookingController.updateBooking(id, {
         userId,
         providerId,
-        date
+        date,
+        pricingId
     });
     var nodemailer = require('nodemailer');
     var transporter = nodemailer.createTransport({

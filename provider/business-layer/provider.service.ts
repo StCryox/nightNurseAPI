@@ -47,7 +47,7 @@ export class ProviderService {
 
                 experience = await this.experienceRepository.get(provider[i].id);
 
-                pricing = await this.pricingRepository.get(provider[i].id);
+                pricing = await this.pricingRepository.getAllOfPricing(provider[i].id);
                 if(diploma &&experience && pricing){
                     providerList.push(new Provider(provider[i], diploma, experience, pricing));
                 }
@@ -61,7 +61,7 @@ export class ProviderService {
         const provider = await this.providerRepository.getOne(providerId);
         const diploma: Diploma[] | null =  await this.diplomaRepository.get(providerId);
         const experience: Experience[] | null = await this.experienceRepository.get(providerId);
-        const pricing: Pricing[] | null =  await this.pricingRepository.get(providerId);
+        const pricing: Pricing[] | null =  await this.pricingRepository.getAllOfPricing(providerId);
 
         if(provider && diploma &&experience && pricing){
 
@@ -165,7 +165,7 @@ export class ProviderService {
         const provider = await this.providerRepository.getOneByUserId(userId);
         const diploma: Diploma[] | null =  await this.diplomaRepository.get(provider?.id);
         const experience: Experience[] | null = await this.experienceRepository.get(provider?.id);
-        const pricing: Pricing[] | null =  await this.pricingRepository.get(provider?.id);
+        const pricing: Pricing[] | null =  await this.pricingRepository.getAllOfPricing(provider?.id);
         if(provider && diploma &&experience && pricing){
             return new Provider(provider, diploma, experience, pricing);
         }

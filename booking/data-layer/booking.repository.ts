@@ -28,6 +28,7 @@ export class BookingRepository{
                                 userId: row["userId"],
                                 providerId: row["providerId"],
                                 date: row["date"],
+                                pricingId: row['pricingId'],
                                 updateAt: row["updateAt"],
                                 createdAt: row["createdAt"]
                             });
@@ -53,6 +54,7 @@ export class BookingRepository{
                                 userId: row["userId"],
                                 providerId: row["providerId"],
                                 date: row["date"],
+                                pricingId: row['pricingId'],
                                 updateAt: row["updateAt"],
                                 createdAt: row["createdAt"]
                             });
@@ -80,6 +82,7 @@ export class BookingRepository{
                             userId: row["userId"],
                             providerId: row["providerId"],
                             date: row["date"],
+                            pricingId: row['pricingId'],
                             updateAt: row["updateAt"],
                             createdAt: row["createdAt"]
                         });
@@ -97,12 +100,13 @@ export class BookingRepository{
         try {
             if(BookingRepository._connection){
                 await BookingRepository._connection.execute(`INSERT INTO ${this.table} 
-                    (id, userId, providerId, date, updateAt, createdAt) 
-                    VALUES (?, ?, ?, ?, ?, ?)`, [
+                    (id, userId, providerId, date, pricingId, updateAt, createdAt) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)`, [
                     uuidv4(),
                     booking.userId,
                     booking.providerId,
                     booking.date,
+                    booking.pricingId,
                     new Date(),
                     new Date()
                 ]);
@@ -146,6 +150,58 @@ export class BookingRepository{
             }
         } catch(err) {
             console.error(err); 
+        }
+        return null;
+    }
+
+    public async getAllByProvider(providerId: string | undefined): Promise<Booking[] | null>{
+        BookingRepository._connection = await DatabaseUtils.getConnection();
+        try {
+            if(BookingRepository._connection){
+                const res = await BookingRepository._connection.query(`SELECT * FROM ${this.table} WHERE providerId = "${providerId}" ORDER BY date DESC`);
+                const data = res[0];
+                if(Array.isArray(data)) {
+                    return (data as RowDataPacket[]).map(function(row) {
+                        return new Booking({
+                            id: "" + row["id"],
+                            userId: row["userId"],
+                            providerId: row["providerId"],
+                            date: row["date"],
+                            pricingId: row["pricingid"],
+                            updateAt: row["updateAt"],
+                            createdAt: row["createdAt"]
+                        });
+                    });
+                }
+            }
+        } catch(err) {
+            console.error(err);
+        }
+        return null;
+    }
+
+    public async getAllProviderBookingsByIdAndDate(providerId: string | undefined, date: string): Promise<Booking[] | null>{
+        BookingRepository._connection = await DatabaseUtils.getConnection();
+        try {
+            if(BookingRepository._connection){
+                const res = await BookingRepository._connection.query(`SELECT * FROM ${this.table} WHERE providerId = "${providerId}" AND date = '${date}' ORDER BY date DESC`);
+                const data = res[0];
+                if(Array.isArray(data)) {
+                    return (data as RowDataPacket[]).map(function(row) {
+                        return new Booking({
+                            id: "" + row["id"],
+                            userId: row["userId"],
+                            providerId: row["providerId"],
+                            date: row["date"],
+                            pricingId: row["pricingid"],
+                            updateAt: row["updateAt"],
+                            createdAt: row["createdAt"]
+                        });
+                    });
+                }
+            }
+        } catch(err) {
+            console.error(err);
         }
         return null;
     }

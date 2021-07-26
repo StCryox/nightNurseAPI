@@ -32,4 +32,12 @@ export class BookingService {
     public async remove(id: string): Promise<string | null> {
        return this.bookingRepository.delete(id);
     }
+
+    public async getAllProviderBookingsById(providerId: string | undefined): Promise<Booking[] | null> {
+        return this.bookingRepository.getAllByProvider(providerId);
+    }
+
+    public async getAllProviderBookingsByIdAndDate(providerId: string | undefined, date: string): Promise<Booking[] | null> {
+        return this.bookingRepository.getAllProviderBookingsByIdAndDate(providerId, date);
+    }
 }

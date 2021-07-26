@@ -3,6 +3,7 @@ export interface IBooking {
     userId: string;
     providerId: string;
     date: Date;
+    pricingId: string;
     updateAt?: Date;
     createdAt?: Date;
 }
@@ -12,6 +13,7 @@ export class Booking implements IBooking {
     userId: string;
     providerId: string;
     date: Date;
+    pricingId: string;
     updateAt?: Date;
     createdAt?: Date;
 
@@ -20,6 +22,7 @@ export class Booking implements IBooking {
         this.userId = booking.userId;
         this.providerId = booking.providerId;
         this.date = booking.date;
+        this.pricingId = booking.pricingId;
         this.updateAt = booking.updateAt;
         this.createdAt = new Date();
     }

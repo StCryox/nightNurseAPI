@@ -32,4 +32,13 @@ export class BookingController {
     public async removeBooking(id: string): Promise<string | null> {
        return this.bookingService.remove(id);
     }
+
+    public async getAllProviderBookingsById(providerId: string | undefined): Promise<Booking[] | null> {
+        return this.bookingService.getAllProviderBookingsById(providerId);
+    }
+
+    public async getAllProviderBookingsByIdAndDate(providerId: string | undefined, date: string): Promise<Booking[] | null> {
+        return this.bookingService.getAllProviderBookingsByIdAndDate(providerId, date);
+    }
+
 }

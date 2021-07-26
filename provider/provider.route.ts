@@ -132,6 +132,29 @@ providerRouter.delete("/:id", isAuthentified, async function(req, res) {
     res.status(200).json(result).end();
 });
 
+/*providerRouter.get("/pricing/date", async function(req, res) {
+    const providerId = req.body.providerId;
+    const date = req.body.date;
+    if( providerId === undefined || date === undefined) {
+        res.status(400).send("Paramaters are missing.").end();
+        return;
+    }
+    const providerController = new ProviderController();
+    const pricings = await providerController.getAllOfPricingWithDate(providerId, date);
+    res.status(200).json(pricings).end();
+});*/
+
+/*providerRouter.get("/pricing", async function(req, res) {
+    const providerId = req.body.providerId;
+    if( providerId === undefined || date) {
+        res.status(400).send("Paramaters are missing.").end();
+        return;
+    }
+    const providerController = new ProviderController();
+    const pricings = await providerController.getAllOfPricingProvider(providerId);
+    res.status(200).json(pricings).end();
+});*/
+
 export {
     providerRouter
 };
