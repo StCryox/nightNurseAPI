@@ -1,16 +1,17 @@
 import express from "express";
 import { isAuthentified } from "../authentification/auth.middleware";
 import { UserController } from "./user.controller";
+import bcrypt from "bcrypt";
 
 const userRouter = express.Router();
 
-userRouter.get("/", isAuthentified, async function(req, res) {
+userRouter.get("/", async function(req, res) {
     const userController = new UserController();
     const userList = await userController.getAllUsers();
     res.status(200).json(userList).end();
 });
 
-userRouter.get("/:id", isAuthentified, async function(req, res) {
+userRouter.get("/:id", async function(req, res) {
     const id = req.params.id;
     const userController = new UserController();
     const user = await userController.getUserById(id);
@@ -23,7 +24,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
     const lastName = req.body.lastName;
     const mail = req.body.mail;
     const login = req.body.login;
-    const password = req.body.password;
+    let password = req.body.password;
     const image = req.body.image;
     const birthdate = req.body.birthdate;
     const role = req.body.role;
@@ -52,6 +53,10 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
         return;
     }
 
+    if(password !== '')
+    {
+        password = bcrypt.hashSync(password,15);
+    }
     const userController = new UserController();
 
     const user = await userController.updateUser(id, {

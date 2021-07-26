@@ -8,6 +8,14 @@ import {Pricing} from "../provider/data-layer/model/pricing.model";
 const bookingRouter = express.Router();
 
 const stripe = require("stripe")("sk_test_51JFzBbFJFVSlloUZiKyxrzKKlUz6oPGW2kphACoTGYBy9yvuDefscMBCgjXixu6UFntDU0dO5wcRmgftkPliTkeV00ULwbWv3p");
+const nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'nightnurse.pa@gmail.com',
+        pass: 'vTFA7dnTgKMTEGZ'
+    }
+});
 
 bookingRouter.get("/", isAuthentified, async function(req, res) {
     const bookingController = new BookingController();
@@ -31,11 +39,13 @@ bookingRouter.get("/providerBookings/:userId", isAuthentified, async function(re
     res.status(200).json(userBookings).end();
 });
 
-bookingRouter.get("/provider/date", isAuthentified, async function(req, res) {
-    const providerId: string = req.body.providerId;
-    const date: string = req.body.date;
+bookingRouter.get("/provider/:providerId/:date", isAuthentified, async function(req, res) {
+    const providerId: string = req.params.providerId;
+    const date: string = req.params.date;
     const bookingController = new BookingController();
     const userBookings = await bookingController.getAllProviderBookingsByIdAndDate(providerId, date);
+    console.log("check : " + providerId + " " + date);
+    console.log(JSON.stringify(userBookings));
     res.status(200).json(userBookings).end();
 });
 
@@ -170,15 +180,6 @@ bookingRouter.post("/mail/update", isAuthentified, async function(req, res) {
     const userMail = req.body.mail;
     const bookingId = req.body.bookingId;
     const providerMail = req.body.providerMail;
-    var nodemailer = require('nodemailer');
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'nightnurse.pa@gmail.com',
-            pass: 'vTFA7dnTgKMTEGZ'
-        }
-    });
-
     var mailOptions = {
         from: 'nightnurse.pa@gmail.com',
         to: userMail,
