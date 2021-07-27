@@ -30,6 +30,10 @@ export class ProviderController {
         return this.providerService.updateProvider(id, provider);
     }
 
+    public async verifyProvider(id: string): Promise<boolean | null> {
+        return this.providerService.setDiplomaVerifiction(id,true);
+    }
+
     public async removeProvider(id: string): Promise<string | null> {
        return this.providerService.deleteProvider(id);
     }

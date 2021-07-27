@@ -1,6 +1,6 @@
 import express from "express";
 import {v4 as uuidv4} from 'uuid';
-import { isAuthentified, isProvider } from "../authentification/auth.middleware";
+import {isAdministrator, isAuthentified, isProvider} from "../authentification/auth.middleware";
 import { Diploma } from "./data-layer/model/diploma.model";
 import { Experience } from "./data-layer/model/experience.model";
 import { Pricing } from "./data-layer/model/pricing.model";
@@ -36,6 +36,18 @@ providerRouter.get("/userId/:id", async function(req, res) {
     const provider = await providerController.getOneProviderByUserId(userId);
     res.status(200).json(provider).end();
 });
+providerRouter.post("/verify/:id",isAuthentified,isAdministrator, async function(req,res)
+{
+    const id = req.params.id;
+    if( id === undefined) {
+        res.status(400).send("Id is missing.").end();
+        return;
+    }
+    const providerController = new ProviderController();
+    const provider = await providerController.verifyProvider(id);
+    res.status(200).json(provider).end();
+})
+
 
 providerRouter.put("/:id", isAuthentified, isProvider, async function(req, res) {
     const id = req.params.id;

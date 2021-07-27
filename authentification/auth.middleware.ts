@@ -23,6 +23,7 @@ export async function isAuthentified(req: express.Request, res: express.Response
 
 export async function isAdministrator(req: express.Request, res: express.Response, next: express.NextFunction) {
     const auth = req.headers["authorization"];
+    console.log(JSON.stringify(req.headers));
     if(auth !== undefined) {
         const token = auth.slice(7);
         const admin = token.substring(0, 5);
@@ -46,7 +47,7 @@ export async function isProvider(req: express.Request, res: express.Response, ne
         const token = auth.slice(7);
         const provider = token.substring(0, 5);
         console.log(provider);
-        if(provider === "vider") {
+        if(provider === "vider" || provider === "minad") {
             const providerController = new ProviderController();
             let providerId = await providerController.getOneProvider(id);
             if(providerId != null){
