@@ -37,7 +37,7 @@ export class UserRepository{
                             zipcode: row["zipcode"],
                             city: row["city"],
                             province: row["province"],
-                            phoneNumber: row["phoneNumber"],
+                            phoneNumber: row["phonenumber"],
                             updateAt: row["updateAt"],
                             createdAt: row["createdAt"]
                         });
@@ -51,7 +51,6 @@ export class UserRepository{
     }
 
     public async getOne(login?: string, mail?: string, id?: string): Promise<User | null> {
-        console.log("here");
         UserRepository._connection = await DatabaseUtils.getConnection();
         try{
             if(UserRepository._connection){
@@ -76,7 +75,7 @@ export class UserRepository{
                             zipcode: row["zipcode"],
                             city: row["city"],
                             province: row["province"],
-                            phoneNumber: row["phoneNumber"],
+                            phoneNumber: row["phonenumber"],
                             updateAt: row["updateAt"],
                             createdAt: row["createdAt"]
                         });
@@ -139,7 +138,7 @@ export class UserRepository{
                     user.password,
                     user.image,
                     user.birthdate,
-                    user.age,
+                    User.getAge(user.birthdate),
                     user.role,
                     user.address,
                     user.zipcode,

@@ -15,6 +15,7 @@ userRouter.get("/:id", async function(req, res) {
     const id = req.params.id;
     const userController = new UserController();
     const user = await userController.getUserById(id);
+    console.log(JSON.stringify(user));
     res.status(200).json(user).end();
 });
 
@@ -34,7 +35,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
     const province = req.body.province;
     const phoneNumber = req.body.phoneNumber;
 
-    
+    console.log("req : " + req);
     if( id === undefined
         || firstName === undefined 
         || lastName === undefined 
@@ -53,7 +54,7 @@ userRouter.post("/update/:id", isAuthentified, async function(req, res) {
         return;
     }
 
-    if(password !== '')
+    if(password !== '' && password.length < 20)
     {
         password = bcrypt.hashSync(password,15);
     }
@@ -124,9 +125,8 @@ userRouter.post("/file", async(req: any, res: any) => {
     const fs = require('fs');
     try {
         console.log(req.files.fileKey.data);
-        fs.writeFile('images/monimage.jpg',file.data, function (err: any) {
+        fs.writeFile(`images/${file.name}.jpg`,file.data, function (err: any) {
             if (err) return console.log(err);
-            console.log('Hello World > helloworld.txt');
         });
     }
     catch (err) {
@@ -134,7 +134,6 @@ userRouter.post("/file", async(req: any, res: any) => {
     }
 
     console.log("File uploaded: ", file.name);
-    console.log("oh bowdel + " + JSON.stringify(req.body));
 });
 
 export {

@@ -57,7 +57,7 @@ export class User implements IUser {
         this.createdAt = new Date();
     }
     
-    private static getAge(date: Date): number{
+    public static getAge(date: Date): number{
         let today = new Date();
         let birthDate = new Date(date);
         let age = today.getFullYear() - birthDate.getFullYear();
